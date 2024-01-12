@@ -49,5 +49,6 @@ jobs:
           application_name: keyboardBackend
           environment_name: KeyboardBackend-env
           version_label: github-action-${{ env.CURRENT_TIME }}
+          use_existing_version_if_available: true
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
