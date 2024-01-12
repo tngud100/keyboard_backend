@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.keyboard.KeyboardApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-01-12T04:10:17" hostname="DESKTOP-D0K5P3A" time="1.423">
+  <properties/>
+  <testcase name="contextLoads()" classname="com.example.keyboard.KeyboardApplicationTests" time="1.423"/>
+  <system-out><![CDATA[13:10:13.862 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.keyboard.KeyboardApplicationTests]: KeyboardApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+13:10:14.082 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.keyboard.KeyboardApplication for test class com.example.keyboard.KeyboardApplicationTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.1.7)
+
+2024-01-12T13:10:14.886+09:00  INFO 17312 --- [    Test worker] c.e.keyboard.KeyboardApplicationTests    : Starting KeyboardApplicationTests using Java 17.0.6 with PID 17312 (started by 개미인스 in C:\Users\개미인스\Desktop\조선 타자기\git\Keyboard_backend)
+2024-01-12T13:10:14.890+09:00  INFO 17312 --- [    Test worker] c.e.keyboard.KeyboardApplicationTests    : No active profile set, falling back to 1 default profile: "default"
+2024-01-12T13:10:16.854+09:00  INFO 17312 --- [    Test worker] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2024-01-12T13:10:17.084+09:00  INFO 17312 --- [    Test worker] c.e.keyboard.KeyboardApplicationTests    : Started KeyboardApplicationTests in 2.614 seconds (process running for 5.205)
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
