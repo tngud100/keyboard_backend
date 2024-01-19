@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.keyboard.repository.userDao">
+    <!-- 로그인 -->
+    <select id="selectByIdAndPw" parameterType="String" resultType="userEntity">
+        select * from user where user_id = #{userId}
+    </select>
+
+    <!--  회원가입  -->
+    <insert id="join" parameterType="userEntity">
+        INSERT INTO users(login_id, password, user_name, phone_number, address, email, birthday)
+        VALUES(#{loginId}, #{password}, #{userName}, #{phoneNum},#{address},#{email}, #{birthday})
+    </insert>
+</mapper>
