@@ -4,14 +4,19 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.keyboard.repository.userDao">
-    <!-- 로그인 -->
-    <select id="selectByIdAndPw" parameterType="String" resultType="userEntity">
-        select * from user where user_id = #{userId}
+    <!-- 로그인 인증 -->
+    <select id="findByLoginId" parameterType="String" resultType="memberEntity">
+        select * from member where login_id = #{loginId}
+    </select>
+
+    <!-- 중복확인 -->
+    <select id="existsById" parameterType="String" resultType="String">
+        select login_id from member where login_id = #{loginId}
     </select>
 
     <!--  회원가입  -->
-    <insert id="join" parameterType="userEntity">
-        INSERT INTO users(login_id, password, user_name, phone_number, address, email, birthday)
+    <insert id="join" parameterType="memberEntity">
+        INSERT INTO member(login_id, password, user_name, phone_number, address, email, birthday)
         VALUES(#{loginId}, #{password}, #{userName}, #{phoneNum},#{address},#{email}, #{birthday})
     </insert>
 </mapper>

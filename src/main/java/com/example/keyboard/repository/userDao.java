@@ -1,13 +1,20 @@
 package com.example.keyboard.repository;
 
-import com.example.keyboard.entity.user.userEntity;
+import com.example.keyboard.entity.member.memberEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
 
 @Mapper
 @Repository
 public interface userDao  {
-     public void join(userEntity user) throws Exception;
-     public userEntity selectByIdAndPw(String userId) throws Exception;
+     public void join(memberEntity user) throws Exception;
+
+     public String existsById(String userId) throws Exception;
+
+     public memberEntity findByLoginId(String userId) throws Exception;
 
 }

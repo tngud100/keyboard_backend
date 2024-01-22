@@ -1,21 +1,23 @@
 package com.example.keyboard.controller;
 
-import com.example.keyboard.entity.jwt.JwtToken;
+import com.example.keyboard.entity.member.memberEntity;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 
-import com.example.keyboard.entity.user.userEntity;
 import com.example.keyboard.service.userService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 
@@ -27,28 +29,32 @@ public class userController {
     private final userService userService;
     // 회원가입
     @PostMapping("/join")
-    public ResponseEntity<Object> join(userEntity vo){
+    public ResponseEntity<Object> join(memberEntity vo){
         try {
-            String userName = userService.join(vo);
-            return new ResponseEntity<>(userName, HttpStatus.OK);
+            String result = userService.join(vo);
+
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    // 로그인
-    @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody Map<String, String> loginForm, HttpServletRequest request){
-        try{
-            String loginId = loginForm.get("loginId");
-            String password = loginForm.get("password");
 
-//            JwtToken token = userService.login(loginId, password);
+    @GetMapping("/session")
+    public ResponseEntity<Object> check() {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-//            return ResponseEntity.ok(token);
-            return new ResponseEntity<>( HttpStatus.OK);
-        }catch(Exception e){
-            return new ResponseEntity<>("fail",HttpStatus.BAD_REQUEST);
-        }
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Iterator<? extends GrantedAuthority> iter = authorities.iterator();
+        GrantedAuthority auth = iter.next();
+        String role = auth.getAuthority();
+
+        System.out.println(name);
+        System.out.println(role);
+        System.out.println(authentication);
+
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 }
