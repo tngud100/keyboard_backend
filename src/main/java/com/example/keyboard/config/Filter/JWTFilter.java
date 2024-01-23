@@ -45,21 +45,35 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //토큰 소멸 시간 검증
         if (jwtUtil.isExpired(token)) {
+            String refreshToken = request.getHeader("Refresh-Token"); // 리프레시 토큰을 요청 헤더에서 가져옵니다.
+            if (refreshToken != null && jwtUtil.validateRefreshToken(refreshToken)) {
+                System.out.println("access토큰이 만료, access토큰 재발급");
+                // 리프레시 토큰이 유효한 경우, 새로운 액세스 토큰을 생성합니다.
 
-            System.out.println("token expired");
-            filterChain.doFilter(request, response);
+//                String newAccessToken = jwtUtil.renewAccessToken(userId, role, 60 * 60 * 10L); // 새 액세스 토큰 생성
 
-            //조건이 해당되면 메소드 종료 (필수)
-            return;
+                // 새로운 액세스 토큰을 응답 헤더에 추가합니다.
+//                response.addHeader("Authorization", "Bearer " + newAccessToken);
+
+//                token = newAccessToken;
+            } else {
+                // 리프레시 토큰이 유효하지 않은 경우, 적절한 에러 처리를 합니다.
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid refresh token");
+                filterChain.doFilter(request, response);
+                return;
+            }
         }
 
+
         //토큰에서 username과 role 획득
-        String username = jwtUtil.getUsername(token);
+        String userId = jwtUtil.getUserId(token);
         String role = jwtUtil.getRole(token);
+
+        System.out.println("user이름:"+userId);
 
         //userEntity를 생성하여 값 set
         memberEntity userEntity = new memberEntity();
-        userEntity.setUserName(username);
+        userEntity.setLoginId(userId);
         userEntity.setPassword("temppassword");
         userEntity.setRole(role);
 

@@ -12,6 +12,8 @@ public class CustomUserDetails implements UserDetails {
 
     public CustomUserDetails(memberEntity userEntity) {
 
+        System.out.println(userEntity);
+
         this.userEntity = userEntity;
     }
 
@@ -41,9 +43,9 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-
         return userEntity.getLoginId();
     }
+
 
     @Override
     public boolean isAccountNonExpired() {

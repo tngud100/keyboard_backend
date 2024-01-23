@@ -2,6 +2,7 @@ package com.example.keyboard.config.Filter;
 
 import com.example.keyboard.config.JWT.JWTUtil;
 import com.example.keyboard.entity.jwt.CustomUserDetails;
+import com.example.keyboard.entity.jwt.tokenDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.Collection;
@@ -29,11 +31,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
         //클라이언트 요청에서 username, password 추출
-        String username = obtainUsername(request);
+        String userId = request.getParameter("userId");
         String password = obtainPassword(request);
 
         //스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야 함
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userId, password, null);
 
         //token에 담은 검증을 위한 AuthenticationManager로 전달
         return authenticationManager.authenticate(authToken);
@@ -45,7 +47,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         //UserDetailsS
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        String username = customUserDetails.getUsername();
+        String userId = customUserDetails.getUsername();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
@@ -53,14 +55,24 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(username, role, 60*60*10L);
+        String accessToken = jwtUtil.createAccessToken(userId, role, 60*60*10L);
+        String refreshToken = jwtUtil.createRefreshToken(180*60*60*10L);
 
-        response.addHeader("Authorization", "Bearer " + token);
+        tokenDTO tokenDto = new tokenDTO();
+        tokenDto.setAccessToken(accessToken);
+        tokenDto.setRefreshToken(refreshToken);
+
+        response.addHeader("Authorization", "Bearer " + accessToken);
+        response.addHeader("Refresh-Token", refreshToken);
+
+        System.out.println("로그인 성공 토큰 발급 완료");
+        System.out.println(tokenDto);
     }
 
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+        System.out.println("로그인 실패");
         //로그인 실패시 401 응답 코드 반환
         response.setStatus(401);
     }
