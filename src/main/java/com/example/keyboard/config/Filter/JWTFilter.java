@@ -2,7 +2,9 @@ package com.example.keyboard.config.Filter;
 
 import com.example.keyboard.config.JWT.JWTUtil;
 import com.example.keyboard.entity.jwt.CustomUserDetails;
-import com.example.keyboard.entity.member.memberEntity;
+import com.example.keyboard.entity.jwt.RefreshToken;
+import com.example.keyboard.entity.member.MemberEntity;
+import com.example.keyboard.config.Redis.RedisUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,10 +18,13 @@ import java.io.IOException;
 
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
+    private final RedisUtils redisUtils;
 
-    public JWTFilter(JWTUtil jwtUtil) {
+
+    public JWTFilter(JWTUtil jwtUtil, RedisUtils redisUtils) {
 
         this.jwtUtil = jwtUtil;
+        this.redisUtils = redisUtils;
     }
 
 
@@ -49,13 +54,18 @@ public class JWTFilter extends OncePerRequestFilter {
             if (refreshToken != null && jwtUtil.validateRefreshToken(refreshToken)) {
                 System.out.println("access토큰이 만료, access토큰 재발급");
                 // 리프레시 토큰이 유효한 경우, 새로운 액세스 토큰을 생성합니다.
+                String userId = jwtUtil.getUserId(refreshToken);
+                String role = jwtUtil.getRole(refreshToken);
 
-//                String newAccessToken = jwtUtil.renewAccessToken(userId, role, 60 * 60 * 10L); // 새 액세스 토큰 생성
+                String refreshTokenDTO = redisUtils.getData(refreshToken);
+                System.out.println(refreshTokenDTO);
+                System.out.println(refreshTokenDTO.userId);
 
+                // 오류 부분
+                String newAccessToken = jwtUtil.createAccessToken(userId, role, 60 * 60 * 10L); // 새 액세스 토큰 생성
                 // 새로운 액세스 토큰을 응답 헤더에 추가합니다.
-//                response.addHeader("Authorization", "Bearer " + newAccessToken);
+                response.addHeader("Authorization", "Bearer " + newAccessToken);
 
-//                token = newAccessToken;
             } else {
                 // 리프레시 토큰이 유효하지 않은 경우, 적절한 에러 처리를 합니다.
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid refresh token");
@@ -64,7 +74,6 @@ public class JWTFilter extends OncePerRequestFilter {
             }
         }
 
-
         //토큰에서 username과 role 획득
         String userId = jwtUtil.getUserId(token);
         String role = jwtUtil.getRole(token);
@@ -72,7 +81,7 @@ public class JWTFilter extends OncePerRequestFilter {
         System.out.println("user이름:"+userId);
 
         //userEntity를 생성하여 값 set
-        memberEntity userEntity = new memberEntity();
+        MemberEntity userEntity = new MemberEntity();
         userEntity.setLoginId(userId);
         userEntity.setPassword("temppassword");
         userEntity.setRole(role);

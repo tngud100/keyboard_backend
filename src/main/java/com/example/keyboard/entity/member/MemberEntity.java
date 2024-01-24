@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class memberEntity {
+public class MemberEntity {
     private Long id;            // 회원번호
     private String loginId;     // 로그인 ID
     private String password;    // 비밀번호

@@ -1,23 +1,26 @@
 package com.example.keyboard.config.JWT;
 
+import com.example.keyboard.config.Redis.RedisUtils;
+import com.example.keyboard.entity.jwt.RefreshToken;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
 
 @Component
 public class JWTUtil {
 
     private Key key;
+    private final RedisUtils redisUtils;
 
-    public JWTUtil(@Value("${jwt.secret}") String secret) {
+    private RefreshToken refreshToken;
+
+    public JWTUtil(@Value("${jwt.secret}") String secret, RedisUtils redisUtils) {
+        this.redisUtils = redisUtils;
         byte[] byteSecretKey = Decoders.BASE64.decode(secret);
         key = Keys.hmacShaKeyFor(byteSecretKey);
     }
@@ -33,12 +36,19 @@ public class JWTUtil {
     }
 
     public Boolean isExpired(String token) {
-
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().before(new Date());
+        try {
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            // 토큰이 만료된 경우
+            return true;
+        } catch (Exception e) {
+            // 다른 모든 예외의 경우 (토큰 파싱 실패, 만료 정보 없음 등)
+            return true; // 또는 상황에 따라 false를 반환할 수도 있습니다.
+        }
     }
 
     public String createAccessToken(String userId, String role, long expirationMs) {
-        Claims claims = Jwts.claims().setSubject(userId);
+        Claims claims = Jwts.claims();
         claims.put("userId", userId);
         claims.put("role", role);
 
@@ -63,8 +73,6 @@ public class JWTUtil {
                 .compact();
     }
 
-
-
     public boolean validateRefreshToken(String refreshToken) {
         try {
             // 리프레시 토큰을 파싱합니다. JWT 생성 시 사용된 동일한 키를 사용하세요.
@@ -79,17 +87,17 @@ public class JWTUtil {
                 return false; // 토큰이 만료되었습니다.
             }
 
-            // 필요한 경우, 토큰이 취소되지 않았는지 확인합니다. 예를 들어, 데이터베이스에서 조회하는 방법 등이 있습니다.
+            // Redis에서 토큰이 취소되지 않았는지 확인합니다.
+            boolean isExistRefreshToken = redisUtils.refreshTokenExists(refreshToken);
+
+            if(!isExistRefreshToken){
+                return false; // 토큰이 삭제 되었습니다.
+            }
 
             return true; // 토큰이 유효합니다.
         } catch (JwtException | IllegalArgumentException e) {
             // 토큰이 유효하지 않습니다. 예외를 필요에 따라 로깅합니다.
             return false;
         }
-    }
-
-    public String renewAccessToken(String userId, String role, Long expiredMs) {
-        // 새로운 accessToken 생성 로직
-        return createAccessToken(userId, role, expiredMs); // 유효 시간은 예시로, 필요에 따라 조정
     }
 }

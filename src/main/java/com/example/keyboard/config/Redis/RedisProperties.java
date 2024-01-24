@@ -1,4 +1,4 @@
-package com.example.keyboard.redis;
+package com.example.keyboard.config.Redis;
 
 import lombok.Getter;
 import lombok.Setter;

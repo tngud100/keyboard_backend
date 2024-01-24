@@ -2,16 +2,17 @@ package com.example.keyboard.config.Filter;
 
 import com.example.keyboard.config.JWT.JWTUtil;
 import com.example.keyboard.entity.jwt.CustomUserDetails;
-import com.example.keyboard.entity.jwt.tokenDTO;
+import com.example.keyboard.config.Redis.RedisUtils;
+import com.example.keyboard.entity.jwt.RefreshToken;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.Collection;
@@ -21,10 +22,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+    private final RedisUtils redisUtils;
+
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RedisUtils redisUtils) {
 
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.redisUtils = redisUtils;
     }
 
     @Override
@@ -58,15 +62,21 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String accessToken = jwtUtil.createAccessToken(userId, role, 60*60*10L);
         String refreshToken = jwtUtil.createRefreshToken(180*60*60*10L);
 
-        tokenDTO tokenDto = new tokenDTO();
-        tokenDto.setAccessToken(accessToken);
-        tokenDto.setRefreshToken(refreshToken);
+        RefreshToken refreshTokenDto = RefreshToken.builder()
+                .authId(userId)
+                .token(refreshToken)
+                .role(role)
+                .ttl(180 * 60 * 60 * 10L)
+                .build();
+
+        redisUtils.saveRefreshTokenInfo(refreshTokenDto);
+
 
         response.addHeader("Authorization", "Bearer " + accessToken);
         response.addHeader("Refresh-Token", refreshToken);
 
         System.out.println("로그인 성공 토큰 발급 완료");
-        System.out.println(tokenDto);
+//        System.out.println(tokenDto);
     }
 
     //로그인 실패시 실행하는 메소드

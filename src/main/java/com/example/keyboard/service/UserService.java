@@ -1,31 +1,19 @@
 package com.example.keyboard.service;
 
-import com.example.keyboard.entity.jwt.CustomUserDetails;
-import com.example.keyboard.entity.member.memberEntity;
-import com.example.keyboard.redis.RedisUtil;
+import com.example.keyboard.entity.member.MemberEntity;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.keyboard.repository.userDao;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
+import com.example.keyboard.repository.UserDao;
 @Service
 @RequiredArgsConstructor
-public class userService {
-    public final userDao userDao;
-    public final RedisUtil redisUtil;
+public class UserService {
+    public final UserDao userDao;
 
-    public String join(memberEntity vo) throws Exception {
-        memberEntity userVO = new memberEntity();
+    public String join(MemberEntity vo) throws Exception {
+        MemberEntity userVO = new MemberEntity();
         String userId = vo.getLoginId();
 
         String existId = userDao.existsById(userId);

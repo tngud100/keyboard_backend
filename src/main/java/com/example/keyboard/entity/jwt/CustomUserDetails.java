@@ -1,6 +1,6 @@
 package com.example.keyboard.entity.jwt;
 
-import com.example.keyboard.entity.member.memberEntity;
+import com.example.keyboard.entity.member.MemberEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
-    private final memberEntity userEntity;
+    private final MemberEntity memberEntity;
 
-    public CustomUserDetails(memberEntity userEntity) {
+    public CustomUserDetails(MemberEntity memberEntity) {
 
-        System.out.println(userEntity);
+        System.out.println(memberEntity);
 
-        this.userEntity = userEntity;
+        this.memberEntity = memberEntity;
     }
 
 
@@ -28,7 +28,7 @@ public class CustomUserDetails implements UserDetails {
             @Override
             public String getAuthority() {
 
-                return userEntity.getRole();
+                return memberEntity.getRole();
             }
         });
 
@@ -38,14 +38,13 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getPassword() {
 
-        return userEntity.getPassword();
+        return memberEntity.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return userEntity.getLoginId();
+        return memberEntity.getLoginId();
     }
-
 
     @Override
     public boolean isAccountNonExpired() {
