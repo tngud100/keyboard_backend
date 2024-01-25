@@ -15,12 +15,10 @@ public class RefreshToken {
 
     @Id
     private String authId;
-
     @Indexed
     private String token;
 
     private String role;
-
     @TimeToLive
     private long ttl;
 

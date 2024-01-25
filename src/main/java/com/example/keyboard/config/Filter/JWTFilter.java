@@ -5,6 +5,8 @@ import com.example.keyboard.entity.jwt.CustomUserDetails;
 import com.example.keyboard.entity.jwt.RefreshToken;
 import com.example.keyboard.entity.member.MemberEntity;
 import com.example.keyboard.config.Redis.RedisUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
@@ -53,19 +56,20 @@ public class JWTFilter extends OncePerRequestFilter {
             String refreshToken = request.getHeader("Refresh-Token"); // 리프레시 토큰을 요청 헤더에서 가져옵니다.
             if (refreshToken != null && jwtUtil.validateRefreshToken(refreshToken)) {
                 System.out.println("access토큰이 만료, access토큰 재발급");
-                // 리프레시 토큰이 유효한 경우, 새로운 액세스 토큰을 생성합니다.
-                String userId = jwtUtil.getUserId(refreshToken);
-                String role = jwtUtil.getRole(refreshToken);
 
+                // Redis에서 리프레시 토큰 데이터를 가져옵니다.
                 String refreshTokenDTO = redisUtils.getData(refreshToken);
-                System.out.println(refreshTokenDTO);
-                System.out.println(refreshTokenDTO.userId);
 
-                // 오류 부분
+                ObjectMapper objectMapper = new ObjectMapper();
+                Map<String, String> dataMap = objectMapper.readValue(refreshTokenDTO, new TypeReference<Map<String, String>>() {});
+
+                String userId = (String) dataMap.get("userId");
+                String role = (String) dataMap.get("role");
+
                 String newAccessToken = jwtUtil.createAccessToken(userId, role, 60 * 60 * 10L); // 새 액세스 토큰 생성
                 // 새로운 액세스 토큰을 응답 헤더에 추가합니다.
                 response.addHeader("Authorization", "Bearer " + newAccessToken);
-
+                token = newAccessToken;
             } else {
                 // 리프레시 토큰이 유효하지 않은 경우, 적절한 에러 처리를 합니다.
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid refresh token");
@@ -91,7 +95,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //스프링 시큐리티 인증 토큰 생성
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-        //세션에 사용자 등록
+        //security에 사용자 등록
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         filterChain.doFilter(request, response);

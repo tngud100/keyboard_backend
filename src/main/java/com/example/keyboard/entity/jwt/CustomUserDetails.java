@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
-    private final MemberEntity memberEntity;
+    private final MemberEntity userEntity;
 
-    public CustomUserDetails(MemberEntity memberEntity) {
+    public CustomUserDetails(MemberEntity userEntity) {
 
-        System.out.println(memberEntity);
+        System.out.println(userEntity);
 
-        this.memberEntity = memberEntity;
+        this.userEntity = userEntity;
     }
 
 
@@ -28,7 +28,7 @@ public class CustomUserDetails implements UserDetails {
             @Override
             public String getAuthority() {
 
-                return memberEntity.getRole();
+                return "ROLE_" + userEntity.getRole();
             }
         });
 
@@ -38,12 +38,12 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getPassword() {
 
-        return memberEntity.getPassword();
+        return userEntity.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return memberEntity.getLoginId();
+        return userEntity.getLoginId();
     }
 
     @Override

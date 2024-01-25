@@ -34,8 +34,8 @@ public class RedisUtils {
 
         // 사용자 ID와 역할을 JSON 형식의 문자열로 저장할 수도 있습니다.
         // 예: {"userId":"user123", "role":"USER"}
-        String userInfo = String.format("{\"userId\":\"%s\", \"role\":\"%s\", \"refreshToken\":\"%s\"}", userId, role, refreshToken);
-        setData("refreshToken", userInfo, expirationMs);
+        String userInfo = String.format("{\"userId\":\"%s\", \"role\":\"%s\" }", userId, role);
+        setData(refreshToken, userInfo, expirationMs);
     }
 
     // 리프레시 토큰으로부터 사용자 정보를 조회하는 메소드 추가

@@ -37,7 +37,8 @@ public class JWTUtil {
 
     public Boolean isExpired(String token) {
         try {
-            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().before(new Date());
+            boolean isExpired = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().before(new Date());
+            return isExpired;
         } catch (ExpiredJwtException e) {
             // 토큰이 만료된 경우
             return true;

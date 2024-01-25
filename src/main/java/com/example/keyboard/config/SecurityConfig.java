@@ -59,18 +59,20 @@ public class SecurityConfig {
         http
                 .httpBasic((auth) -> auth.disable());
 
-        //경로별 인가 작업
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/*").permitAll()
-//                        .requestMatchers("/api/session").hasRole("ADMIN")
-                        .anyRequest().authenticated());
         //JWTFilter 등록
         http
                 .addFilterBefore(new JWTFilter(jwtUtil, redisUtils), LoginFilter.class);
+
         //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
         http
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisUtils), UsernamePasswordAuthenticationFilter.class);
+
+        //경로별 인가 작업
+        http
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/api/join").permitAll()
+//                        .requestMatchers("/api/check").hasAuthority("ROLE_ADMIN")
+                        .anyRequest().authenticated());
 
         http
                 .sessionManagement((session) -> session
