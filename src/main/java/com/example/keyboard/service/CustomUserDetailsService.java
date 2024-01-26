@@ -1,7 +1,7 @@
 package com.example.keyboard.service;
 
 import com.example.keyboard.entity.jwt.CustomUserDetails;
-import com.example.keyboard.repository.UserDao;
+import com.example.keyboard.repository.AuthDao;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,11 +10,11 @@ import com.example.keyboard.entity.member.MemberEntity;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-    private final UserDao userDao;
+    private final AuthDao authDao;
 
-    public CustomUserDetailsService(UserDao userDao) {
+    public CustomUserDetailsService(AuthDao authDao) {
 
-        this.userDao = userDao;
+        this.authDao = authDao;
     }
 
 
@@ -25,7 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         //DB에서 조회
         MemberEntity userData = new MemberEntity();
         try {
-            userData = userDao.findByLoginId(userId);
+            userData = authDao.findByLoginId(userId);
             if (userData != null) {
                 //UserDetails에 담아서 return하면 AutneticationManager가 검증 함
                 return new CustomUserDetails(userData);

@@ -35,10 +35,13 @@ public class JWTUtil {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("role", String.class);
     }
 
+    public Long getExpiration(String token){
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("exp", Long.class);
+    }
+
     public Boolean isExpired(String token) {
         try {
-            boolean isExpired = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().before(new Date());
-            return isExpired;
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().before(new Date());
         } catch (ExpiredJwtException e) {
             // 토큰이 만료된 경우
             return true;
@@ -63,7 +66,6 @@ public class JWTUtil {
 
     public String createRefreshToken(long expirationMs) {
         Claims claims = Jwts.claims();
-        // Optionally, you could add a claim to indicate this is a refresh token
         claims.put("type", "refresh");
 
         return Jwts.builder()

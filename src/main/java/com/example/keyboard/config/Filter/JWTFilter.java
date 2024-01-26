@@ -51,6 +51,16 @@ public class JWTFilter extends OncePerRequestFilter {
         //Bearer 부분 제거 후 순수 토큰만 획득
         String token = authorization.split(" ")[1];
 
+        // 블랙리스트 token인지 확인
+        if(redisUtils.isTokenBlacklisted(token)){
+            System.out.println("token이 blacklist에 포함되어있음, 로그아웃한 access토큰");
+
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Your Token is already logout");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+
         //토큰 소멸 시간 검증
         if (jwtUtil.isExpired(token)) {
             String refreshToken = request.getHeader("Refresh-Token"); // 리프레시 토큰을 요청 헤더에서 가져옵니다.
@@ -66,7 +76,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 String userId = (String) dataMap.get("userId");
                 String role = (String) dataMap.get("role");
 
-                String newAccessToken = jwtUtil.createAccessToken(userId, role, 60 * 60 * 10L); // 새 액세스 토큰 생성
+                String newAccessToken = jwtUtil.createAccessToken(userId, role, 100 * 60 * 60 * 10L); // 새 액세스 토큰 생성
                 // 새로운 액세스 토큰을 응답 헤더에 추가합니다.
                 response.addHeader("Authorization", "Bearer " + newAccessToken);
                 token = newAccessToken;
