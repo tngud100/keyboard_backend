@@ -1,12 +1,9 @@
 package com.example.keyboard.config.Redis;
 
-import com.example.keyboard.config.JWT.JWTUtil;
-//import com.example.keyboard.entity.jwt.BlackListToken;
 import com.example.keyboard.entity.jwt.RefreshToken;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,8 +20,6 @@ public class RedisUtils {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-//    @Autowired
-//    private JWTUtil jwtUtil;
     public RedisUtils(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }

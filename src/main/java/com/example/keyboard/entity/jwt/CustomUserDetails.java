@@ -1,11 +1,14 @@
 package com.example.keyboard.entity.jwt;
 
 import com.example.keyboard.entity.member.MemberEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 public class CustomUserDetails implements UserDetails {
     private final MemberEntity userEntity;
@@ -27,8 +30,7 @@ public class CustomUserDetails implements UserDetails {
 
             @Override
             public String getAuthority() {
-
-                return userEntity.getRole();
+                return "ROLE_"+userEntity.getRole();
             }
         });
 
@@ -37,7 +39,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-
         return userEntity.getPassword();
     }
 

@@ -12,6 +12,5 @@ public interface AuthDao {
      public String existsById(String userId) throws Exception;
 
      public MemberEntity findByLoginId(String userId) throws Exception;
-
 }
 

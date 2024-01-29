@@ -2,6 +2,7 @@ package com.example.keyboard.service;
 
 import com.example.keyboard.config.JWT.JWTUtil;
 import com.example.keyboard.config.Redis.RedisUtils;
+import com.example.keyboard.config.SMS.SmsUtil;
 import com.example.keyboard.entity.member.MemberEntity;
 import lombok.RequiredArgsConstructor;
 
@@ -14,10 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.keyboard.repository.AuthDao;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -25,11 +23,14 @@ public class AuthService {
     public final AuthDao authDao;
     public final RedisUtils redisUtils;
     public final JWTUtil jwtUtil;
+    public final SmsUtil smsUtil;
+
     @Autowired
-    public AuthService(JWTUtil jwtUtil, RedisUtils redisUtils, AuthDao authDao) {
+    public AuthService(JWTUtil jwtUtil, RedisUtils redisUtils, AuthDao authDao, SmsUtil smsUtil) {
         this.jwtUtil = jwtUtil;
         this.redisUtils = redisUtils;
         this.authDao = authDao;
+        this.smsUtil = smsUtil;
     }
 
     public String join(MemberEntity vo) throws Exception {
@@ -62,6 +63,24 @@ public class AuthService {
             System.out.println("블랙리스트 추가 완료");
         }
     }
+
+    public void sendVerifyNum(String phoneNum){
+        Random random = new Random();
+        // 6자리 랜덤 값 입력
+        int verificationCode = random.nextInt(900000) + 100000;
+        String verificationCodeStr = String.valueOf(verificationCode);
+
+        // 인증번호 발신
+        smsUtil.sendOne(phoneNum, verificationCodeStr);
+        //인증코드 유효기간 3분 설정
+        redisUtils.setData(phoneNum, verificationCodeStr,100 * 60 * 60 * 60 * 3L);
+    }
+
+    public boolean checkVerifyNum(String phoneNum, String verifyNum){
+        String certificationNum = redisUtils.getData(phoneNum);
+        return certificationNum.equals(verifyNum);
+    }
+
 
     public Map<String, String> check(String token){
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
