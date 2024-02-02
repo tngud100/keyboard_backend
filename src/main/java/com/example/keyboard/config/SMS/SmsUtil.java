@@ -30,7 +30,7 @@ public class SmsUtil {
         // 발신번호 및 수신번호는 반드시 01012345678 형태로 입력
         message.setFrom("01054847856");
         message.setTo(to);
-        message.setText("[조선키보드] 회원가입 인증을 위한 아래의 인증번호를 입력해주세요\n" + verificationCode);
+        message.setText("[조선타자기] 회원가입 인증을 위한 아래의 인증번호를 입력해주세요\n" + verificationCode);
 
         SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
     }

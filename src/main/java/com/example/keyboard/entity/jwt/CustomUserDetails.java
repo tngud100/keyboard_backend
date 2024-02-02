@@ -30,7 +30,7 @@ public class CustomUserDetails implements UserDetails {
 
             @Override
             public String getAuthority() {
-                return "ROLE_"+userEntity.getRole();
+                return "ROLE_"+userEntity.getROLE();
             }
         });
 
@@ -39,12 +39,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return userEntity.getPassword();
+        return userEntity.getPASSWORD();
     }
 
     @Override
     public String getUsername() {
-        return userEntity.getLoginId();
+        return userEntity.getLOGIN_ID();
     }
 
     @Override

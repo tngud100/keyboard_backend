@@ -35,17 +35,17 @@ public class AuthService {
 
     public String join(MemberEntity vo) throws Exception {
         MemberEntity userVO = new MemberEntity();
-        String userId = vo.getLoginId();
+        String userId = vo.getLOGIN_ID();
 
         String existId = authDao.existsById(userId);
-
+    
         if(existId != null){
             return "아이디가 중복입니다.";
         }
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        vo.setPassword(passwordEncoder.encode(vo.getPassword()));
-        vo.setRole("ADMIN");
+        vo.setPASSWORD(passwordEncoder.encode(vo.getPASSWORD()));
+        vo.setROLE("ADMIN");
 
         authDao.join(vo);
         return  "회원가입 성공!";
