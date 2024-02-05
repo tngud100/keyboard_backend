@@ -39,11 +39,14 @@ public class RedisUtils {
     public void addAccessTokenToBlackList(String accessToken){
         byte[] byteSecretKey = Decoders.BASE64.decode(secret);
         key = Keys.hmacShaKeyFor(byteSecretKey);
-        String userId = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().get("userId", String.class);
-        Long leftAccessExpirationMs = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().get("exp", Long.class);
 
-        Long expirationMs =  leftAccessExpirationMs;
-        System.out.println(new Date(System.currentTimeMillis()).getTime());
+        String userId = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().get("userId", String.class);
+        Long leftAccessExpirationSeconds = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().get("exp", Long.class);
+
+        Long leftAccessExpirationMs = leftAccessExpirationSeconds * 1000;
+        Long currentTimeMs = System.currentTimeMillis();
+
+        Long expirationMs = leftAccessExpirationMs - currentTimeMs;
 
         setData("blackList: "+accessToken, userId, expirationMs);
     }

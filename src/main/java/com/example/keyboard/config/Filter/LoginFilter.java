@@ -58,14 +58,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = auth.getAuthority();
 
-        String accessToken = jwtUtil.createAccessToken(userId, role, 100*60*60*10L);
-        String refreshToken = jwtUtil.createRefreshToken(180*60*60*10L);
+        String accessToken = jwtUtil.createAccessToken(userId, role, 60*60*100*10L); // 1시간
+        String refreshToken = jwtUtil.createRefreshToken(60*60*24*100*10L); // 1일
 
         RefreshToken refreshTokenDto = RefreshToken.builder()
                 .authId(userId)
                 .token(refreshToken)
                 .role(role)
-                .ttl(180 * 60 * 60 * 10L)
+                .ttl(60 * 60 * 100 * 10L)
                 .build();
 
         redisUtils.saveRefreshTokenInfo(refreshTokenDto);

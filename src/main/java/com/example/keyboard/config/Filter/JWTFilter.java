@@ -76,7 +76,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 String userId = (String) dataMap.get("userId");
                 String role = (String) dataMap.get("role");
 
-                String newAccessToken = jwtUtil.createAccessToken(userId, role, 100 * 60 * 60 * 10L); // 새 액세스 토큰 생성
+                String newAccessToken = jwtUtil.createAccessToken(userId, role, 60*60*100*10L); // 새 액세스 토큰 생성
                 // 새로운 액세스 토큰을 응답 헤더에 추가합니다.
                 response.addHeader("Authorization", "Bearer " + newAccessToken);
                 token = newAccessToken;

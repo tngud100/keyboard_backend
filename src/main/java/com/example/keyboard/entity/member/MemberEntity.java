@@ -20,7 +20,4 @@ public class MemberEntity {
     private int DELETE_STATE;           // 탈퇴 여부    ENUM: 0 = 회원, 1 = 탈퇴
     private LocalDate CREATED_DATE;     // 가입 날짜
     private LocalDate MODIFIED_DATE;    // 수정 날짜
-
-    public void clearPassword() {
-    }
 }

@@ -5,7 +5,7 @@
 
 <mapper namespace="com.example.keyboard.repository.AuthDao">
     <!-- 로그인 인증 -->
-    <select id="findByLoginId" parameterType="String" resultType="memberEntity">
+    <select id="findByLoginId" parameterType="String" resultType="MemberEntity">
         select * from Member where LOGIN_ID = #{LOGIN_ID}
     </select>
 

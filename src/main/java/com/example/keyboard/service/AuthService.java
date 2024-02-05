@@ -45,7 +45,6 @@ public class AuthService {
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         vo.setPASSWORD(passwordEncoder.encode(vo.getPASSWORD()));
-        vo.setROLE("ADMIN");
 
         authDao.join(vo);
         return  "회원가입 성공!";
@@ -73,7 +72,7 @@ public class AuthService {
         // 인증번호 발신
         smsUtil.sendOne(phoneNum, verificationCodeStr);
         //인증코드 유효기간 3분 설정
-        redisUtils.setData(phoneNum, verificationCodeStr,100 * 60 * 60 * 60 * 3L);
+        redisUtils.setData(phoneNum, verificationCodeStr,30 * 60 * 10 * 10L);
     }
 
     public boolean checkVerifyNum(String phoneNum, String verifyNum){
