@@ -12,7 +12,7 @@
 
     <!--  등록한 상품 가져오기  -->
     <select id="selectListProduct" resultType="ProductEntity">
-        SELECT * FROM product;
+        SELECT * FROM product limit 10;
     </select>
 
 <!--    &lt;!&ndash;  상세 상품 등록  &ndash;&gt;-->
