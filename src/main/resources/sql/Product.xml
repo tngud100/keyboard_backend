@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.keyboard.repository.ProductDao">
+    <!--  상품 등록  -->
+    <insert id="insertListProduct" parameterType="ProductEntity">
+        INSERT INTO product(NAME, REPRESENT_PICTURE, LIST_PICTURE, LIST_BACK_PICTURE, DESC_PICTURE)
+        VALUES(#{NAME}, #{REPRESENT_PICTURE}, #{LIST_PICTURE}, #{LIST_BACK_PICTURE}, #{DESC_PICTURE})
+    </insert>
+
+    <!--  등록한 상품 가져오기  -->
+    <select id="selectListProduct" resultType="ProductEntity">
+        SELECT * FROM product;
+    </select>
+
+<!--    &lt;!&ndash;  상세 상품 등록  &ndash;&gt;-->
+<!--    <insert id ="insertProduct" parameterType="ProductDetailEntity">-->
+<!--        INSERT INTO productdetail(PRODUCT_ID, NAME, AMOUNT, STOCK)-->
+<!--        VALUES (#{PRODUCT_ID}, #{NAME}, #{AMOUNT}, #{STOCK})-->
+<!--    </insert>-->
+
+<!--    &lt;!&ndash;  상세 상품의 카테고리 등록  &ndash;&gt;-->
+<!--    <insert id ="insertProductCategory" parameterType="ProductDetailEntity">-->
+<!--        INSERT INTO productcategory(PRODUCT_ID, CATEGORY, STATE)-->
+<!--        VALUES (#{PRODUCT_ID}, #{CATEGORY_NAME}, #{CATEGORY_STATE})-->
+<!--    </insert>-->
+
+<!--    &lt;!&ndash;  상세 상품 가져오기  &ndash;&gt;-->
+<!--    <select id="insertProductDetail" parameterType="Integer"  resultType="ProductDetailEntity">-->
+<!--        SELECT * FROM productdetail WHERE PRODUCT_ID = #{PRODUCT_ID}-->
+<!--    </select>-->
+
+<!--    &lt;!&ndash;  상세 상품 카테고리 가져오기  &ndash;&gt;-->
+<!--    <select id="selectProductCategory" parameterType="Integer"  resultType="ProductDetailEntity">-->
+<!--        SELECT * FROM productcategory WHERE PRODUCT_DETAIL_ID = #{PRODUCT_DETAIL_ID}-->
+<!--    </select>-->
+
+<!--    &lt;!&ndash;  상세 상품 기본 값 세팅  &ndash;&gt;-->
+<!--    <update id="updateProductDefault" parameterType="Integer">-->
+<!--        UPDATE productdetail-->
+<!--        SET STATE = #{DEFAULT_STATE}-->
+<!--    </update>-->
+
+<!--    &lt;!&ndash;  상품 리스트 메인 사진 STATE 세팅  &ndash;&gt;-->
+<!--    <update id="updateMainPicState" parameterType="Integer">-->
+<!--        UPDATE product-->
+<!--        SET MAIN_PIC_STATE = #{MAIN_PIC_STATE}-->
+<!--    </update>-->
+<!--    <insert id="insertMainPic" parameterType="String">-->
+<!--        INSERT INTO product(MAIN_PICTURE)-->
+<!--        VALUES (#{MAIN_PICTURE})-->
+<!--    </insert>-->
+
+
+</mapper>
