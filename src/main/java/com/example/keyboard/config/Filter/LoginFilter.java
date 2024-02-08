@@ -65,7 +65,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 .authId(userId)
                 .token(refreshToken)
                 .role(role)
-                .ttl(60 * 60 * 100 * 10L)
+                .ttl(60*60*24*100*10L)
                 .build();
 
         redisUtils.saveRefreshTokenInfo(refreshTokenDto);

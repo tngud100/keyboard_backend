@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,29 +40,29 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-//
-//    // 상세 상품 등록
-//    @PostMapping("/detail/enroll")
-//    public ResponseEntity<Object> insertProductDetail(ProductDetailEntity vo){
-//        try{
-//            productService.insertProductDetail(vo);
-//            return new ResponseEntity<>(HttpStatus.OK);
-//        } catch (Exception e){
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//    }
-//
-//    // 상세 상품 가져오기
-//    @GetMapping("/detail/get")
-//    public ResponseEntity<Object> selectProductDetailList(Integer product_id){
-//        try{
-//            productService.selectProductList(product_id);
-//            return new ResponseEntity<>(HttpStatus.OK);
-//        } catch (Exception e){
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//    }
-//
+
+    // 상세 상품 등록
+    @PostMapping("/detail/enroll")
+    public ResponseEntity<Object> insertProductDetail(ProductDetailEntity vo){
+        try{
+            productService.insertProductDetail(vo);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //상세 상품 가져오기
+    @GetMapping("/detail/get")
+    public ResponseEntity<Object> selectProductDetailList(@RequestParam Long productId){
+        try{
+            List<ProductDetailEntity> ProductDetailList = productService.selectProductDetailList(productId);
+            return new ResponseEntity<>(ProductDetailList, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 //    // 상세 상품 기본값
 //    @PutMapping("/detail/default")
 //    public ResponseEntity<Object> setProductDetailDefault(Integer product_id, Integer product_detail_id){

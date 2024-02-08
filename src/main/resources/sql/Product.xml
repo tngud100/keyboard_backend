@@ -15,27 +15,25 @@
         SELECT * FROM product limit 10;
     </select>
 
-<!--    &lt;!&ndash;  상세 상품 등록  &ndash;&gt;-->
-<!--    <insert id ="insertProduct" parameterType="ProductDetailEntity">-->
-<!--        INSERT INTO productdetail(PRODUCT_ID, NAME, AMOUNT, STOCK)-->
-<!--        VALUES (#{PRODUCT_ID}, #{NAME}, #{AMOUNT}, #{STOCK})-->
-<!--    </insert>-->
+    <!--  상세 상품 등록  -->
+    <insert id ="insertProductDetail" useGeneratedKeys="true" keyProperty="PRODUCT_DETAIL_ID" parameterType="ProductDetailEntity">
+        INSERT INTO productdetail(PRODUCT_ID, NAME, AMOUNT, STOCK)
+        VALUES (#{PRODUCT_ID}, #{NAME}, #{AMOUNT}, #{STOCK})
+    </insert>
+    <insert id ="insertDetailCategory" parameterType="ProductDetailEntity">
+        INSERT INTO productcategory(PRODUCT_DETAIL_ID,CATEGORY, STATE)
+        VALUES (#{PRODUCT_DETAIL_ID}, #{CATEGORY_NAME}, #{CATEGORY_STATE})
+    </insert>
 
-<!--    &lt;!&ndash;  상세 상품의 카테고리 등록  &ndash;&gt;-->
-<!--    <insert id ="insertProductCategory" parameterType="ProductDetailEntity">-->
-<!--        INSERT INTO productcategory(PRODUCT_ID, CATEGORY, STATE)-->
-<!--        VALUES (#{PRODUCT_ID}, #{CATEGORY_NAME}, #{CATEGORY_STATE})-->
-<!--    </insert>-->
+    <!--  상세 상품 가져오기  -->
+    <select id="selectProductDetailList" parameterType="Long"  resultType="ProductDetailEntity">
+        SELECT * FROM productdetail WHERE PRODUCT_ID = #{PRODUCT_ID}
+    </select>
 
-<!--    &lt;!&ndash;  상세 상품 가져오기  &ndash;&gt;-->
-<!--    <select id="insertProductDetail" parameterType="Integer"  resultType="ProductDetailEntity">-->
-<!--        SELECT * FROM productdetail WHERE PRODUCT_ID = #{PRODUCT_ID}-->
-<!--    </select>-->
-
-<!--    &lt;!&ndash;  상세 상품 카테고리 가져오기  &ndash;&gt;-->
-<!--    <select id="selectProductCategory" parameterType="Integer"  resultType="ProductDetailEntity">-->
-<!--        SELECT * FROM productcategory WHERE PRODUCT_DETAIL_ID = #{PRODUCT_DETAIL_ID}-->
-<!--    </select>-->
+    <!--  상세 상품 카테고리 가져오기  -->
+    <select id="selectProductCategory" parameterType="Long"  resultType="ProductDetailEntity">
+        SELECT * FROM productcategory WHERE PRODUCT_ID = #{PRODUCT_ID}
+    </select>
 
 <!--    &lt;!&ndash;  상세 상품 기본 값 세팅  &ndash;&gt;-->
 <!--    <update id="updateProductDefault" parameterType="Integer">-->
