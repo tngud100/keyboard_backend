@@ -4,12 +4,9 @@ import com.example.keyboard.entity.product.ProductDetailEntity;
 import com.example.keyboard.entity.product.ProductEntity;
 import com.example.keyboard.repository.ProductDao;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
-import java.text.DecimalFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,29 +31,46 @@ public class ProductService {
     // 상세 상품 가져오기
     public List<ProductDetailEntity> selectProductDetailList(Long productId) throws Exception{
         List<ProductDetailEntity> productDetail = productDao.selectProductDetailList(productId);
-        List<ProductDetailEntity> productCategory = productDao.selectProductCategory(productId);
         List<ProductDetailEntity> productDetailEntity = new ArrayList<>();
+
         for( ProductDetailEntity productVO : productDetail){
+            Long productDetailId = productVO.getProduct_detail_id();
+            List<ProductDetailEntity> productCategory = productDao.selectProductCategory(productDetailId);
+
+            ProductDetailEntity EntityVO = new ProductDetailEntity();
+
+            EntityVO.setProduct_id(productVO.getProduct_id());
+            EntityVO.setProduct_detail_id(productDetailId);
+            EntityVO.setName(productVO.getName());
+            EntityVO.setAmount(productVO.getAmount());
+            EntityVO.setStock(productVO.getStock());
+            EntityVO.setDefault_state(productVO.getDefault_state());
+
             for( ProductDetailEntity categoryVO : productCategory ) {
-                int categoryState = categoryVO.getCATEGORY_STATE();
-                String categoryName = categoryVO.getCATEGORY_NAME();
-                String name = productVO.getNAME();
-                int amount = productVO.getAMOUNT();
-                int stock = productVO.getSTOCK();
+                int categoryState = categoryVO.getCategory_state();
+                String categoryName = categoryVO.getCategory_name();
 
-                ProductDetailEntity EntityVO = new ProductDetailEntity();
-                EntityVO.setNAME(name);
-                EntityVO.setAMOUNT(amount);
-                EntityVO.setSTOCK(stock);
-                EntityVO.setCATEGORY_NAME(categoryName);
-                EntityVO.setCATEGORY_STATE(categoryState);
-
-                productDetailEntity.add(EntityVO);
+                EntityVO.setCategory_name(categoryName);
+                EntityVO.setCategory_state(categoryState);
             }
+            productDetailEntity.add(EntityVO);
         }
 
         return productDetailEntity;
     }
 
+    // 상세 상품 기본값 설정
+    public void setProductDetailDefault(Long product_id, Integer product_detail_id) throws Exception{
+        productDao.updateProductDefault(product_id, product_detail_id);
+    }
 
+    // 상품 리스트에서 메인으로 설정
+    public void setMainProduct(ProductEntity vo) throws Exception{
+        String main_pic_path = vo.getMain_picture();
+        Integer main_pic_state = vo.getMain_pic_state();
+        Long product_id = vo.getProduct_id();
+
+        productDao.insertMainPic(product_id, main_pic_path);
+        productDao.updateMainPicState(product_id, main_pic_state);
+    }
 }

@@ -70,9 +70,9 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/product/**", "/product/detail/get").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/check", "/product/list/enroll").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/product/detail/get", "/api/logout", "/api/join/send", "/api/join/verify").permitAll()
+                        .requestMatchers("/product/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/check").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/logout", "/api/join/send", "/api/join/verify").permitAll()
                         .anyRequest().authenticated());
 
         http
