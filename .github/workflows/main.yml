@@ -42,7 +42,7 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: keyboardBackend
+          application_name: KeyboardBackend
           environment_name: KeyboardBackend-env
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
           use_existing_version_if_available: true
