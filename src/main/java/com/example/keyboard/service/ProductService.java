@@ -25,7 +25,6 @@ public class ProductService {
     // 상세 상품, 카테고리 등록
     public void insertProductDetail(ProductDetailEntity vo) throws  Exception{
         productDao.insertProductDetail(vo);
-        System.out.println(vo);
         productDao.insertDetailCategory(vo);
     }
     // 상세 상품 가져오기
