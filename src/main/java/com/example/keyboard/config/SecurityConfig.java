@@ -70,11 +70,13 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/path/to/public/api").permitAll()
-                        .requestMatchers("/product/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/check").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/logout", "/api/join/send", "/api/join/verify").permitAll()
-                        .anyRequest().authenticated());
+//                        .requestMatchers("/path/to/public/api").permitAll()
+//                        .requestMatchers("/product/**").hasAuthority("ROLE_ADMIN")
+//                        .requestMatchers("/api/check").hasAuthority("ROLE_ADMIN")
+//                        .requestMatchers("/api/logout", "/api/join/send", "/api/join/verify").permitAll()
+//                        .anyRequest().authenticated());
+                          .anyRequest().permitAll());
+
 
         http
                 .sessionManagement((session) -> session
