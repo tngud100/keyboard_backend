@@ -75,8 +75,8 @@ public class SecurityConfig {
 //                        .requestMatchers("/api/check").hasAuthority("ROLE_ADMIN")
 //                        .requestMatchers("/api/logout", "/api/join/send", "/api/join/verify").permitAll()
 //                        .anyRequest().authenticated());
+                          .requestMatchers("/health").permitAll()
                           .anyRequest().permitAll());
-
 
         http
                 .sessionManagement((session) -> session
