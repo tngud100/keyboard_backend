@@ -3,20 +3,20 @@
         PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.keyboard.repository.UserDao">
+<mapper namespace="com.example.keyboard.repository.AuthDao">
     <!-- 로그인 인증 -->
-    <select id="findByLoginId" parameterType="String" resultType="memberEntity">
-        select * from member where login_id = #{loginId}
+    <select id="findByLoginId" parameterType="String" resultType="MemberEntity">
+        select * from Member where LOGIN_ID = #{LOGIN_ID}
     </select>
 
     <!-- 중복확인 -->
     <select id="existsById" parameterType="String" resultType="String">
-        select login_id from member where login_id = #{loginId}
+        select LOGIN_ID from Member where LOGIN_ID = #{LOGIN_ID}
     </select>
 
     <!--  회원가입  -->
-    <insert id="join" parameterType="memberEntity">
-        INSERT INTO member(login_id, password, user_name, phone_num, address, email, birthday)
-        VALUES(#{loginId}, #{password}, #{userName}, #{phoneNum},#{address},#{email}, #{birthday})
+    <insert id="join" parameterType="MemberEntity">
+        INSERT INTO Member(LOGIN_ID, PASSWORD, USER_NAME, PHONE_NUM, ADDRESS, ZIPCODE, ADDRESS_DETAIL, EMAIL, BIRTHDAY)
+        VALUES(#{LOGIN_ID}, #{PASSWORD}, #{USER_NAME}, #{PHONE_NUM},#{ADDRESS}, #{ZIPCODE}, #{ADDRESS_DETAIL}, #{EMAIL}, #{BIRTHDAY})
     </insert>
 </mapper>

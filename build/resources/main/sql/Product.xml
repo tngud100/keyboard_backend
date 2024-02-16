@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.keyboard.repository.ProductDao">
+    <!--  상품 등록  -->
+    <insert id="insertListProduct" parameterType="ProductEntity">
+        INSERT INTO product(name, represent_picture, list_picture, LIST_BACK_PICTURE, DESC_PICTURE)
+        VALUES(#{name}, #{represent_picture}, #{list_picture}, #{list_back_picture}, #{desc_picture})
+    </insert>
+
+    <!--  등록한 상품 가져오기  -->
+    <select id="selectListProduct" resultType="ProductEntity">
+        SELECT * FROM product limit 10;
+    </select>
+
+    <!--  상세 상품 등록  -->
+    <insert id ="insertProductDetail" useGeneratedKeys="true" keyProperty="product_detail_id" parameterType="ProductDetailEntity">
+        INSERT INTO productdetail(product_id, name, amount, stock)
+        VALUES (#{product_id}, #{name}, #{amount}, #{stock})
+    </insert>
+    <insert id ="insertDetailCategory" parameterType="ProductDetailEntity">
+        INSERT INTO productcategory(product_detail_id, category_name, category_state)
+        VALUES (#{product_detail_id}, #{category_name}, #{category_state})
+    </insert>
+
+    <!--  상세 상품 가져오기  -->
+    <select id="selectProductDetailList" parameterType="Long"  resultType="ProductDetailEntity">
+        SELECT * FROM productdetail WHERE product_id = #{productId}
+    </select>
+
+    <!--  상세 상품 카테고리 가져오기  -->
+    <select id="selectProductCategory" parameterType="Long"  resultType="ProductDetailEntity">
+        SELECT * FROM productcategory WHERE product_detail_id = #{productDetailId}
+    </select>
+
+    <!--  상세 상품 기본 값 세팅  -->
+    <update id="updateProductDefault">
+        UPDATE productdetail
+        SET default_state = IF(default_state = 0, 1, 0)
+        WHERE product_id = #{product_id} and product_detail_id = #{product_detail_id}
+    </update>
+
+    <!--  상품 리스트 메인 사진 STATE, IMG 세팅  -->
+    <update id="insertMainPic">
+        UPDATE product
+        SET main_picture = #{main_pic_path}
+        WHERE product_id = #{product_id};
+    </update>
+    <update id="updateMainPicState">
+        UPDATE product
+        SET main_pic_state = #{main_pic_state}
+        WHERE product_id = #{product_id}
+    </update>
+
+
+</mapper>
