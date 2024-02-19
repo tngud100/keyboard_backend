@@ -75,10 +75,16 @@ public class SecurityConfig  {
             http
                     .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisUtils), UsernamePasswordAuthenticationFilter.class);
 
+            http
+                    .anonymous((auth) -> auth.key("unique"));
+
             //경로별 인가 작업
             http
+
                     .authorizeHttpRequests((auth) -> auth
-                              .anyRequest().authenticated());
+                            .requestMatchers("/").anonymous()
+                            .requestMatchers("/error").anonymous()
+                            .anyRequest().permitAll());
 
             http
                     .sessionManagement((session) -> session
