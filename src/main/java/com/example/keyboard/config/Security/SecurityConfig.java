@@ -83,9 +83,10 @@ public class SecurityConfig  {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").anonymous()
-                        .requestMatchers("/error").anonymous()
-                        .requestMatchers("/health").permitAll()
+//                        .requestMatchers("/").anonymous()
+//                        .requestMatchers("/error").anonymous()
+                        .requestMatchers("/**/health").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated());
 
         http
