@@ -11,8 +11,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -37,16 +39,20 @@ public class JWTFilter extends OncePerRequestFilter {
         //request에서 Authorization 헤더를 찾음
         String authorization= request.getHeader("Authorization");
 
-        //Authorization 헤더 검증
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
+        try {
+            //Authorization 헤더 검증
+            if (authorization == null || !authorization.startsWith("Bearer ")) {
 
-            System.out.println("token null");
-            System.out.println(SecurityContextHolder.getContext().getAuthentication());
+                System.out.println("token null");
+                System.out.println(SecurityContextHolder.getContext().getAuthentication());
 
-            filterChain.doFilter(request, response);
+                filterChain.doFilter(request, response);
 
-            //조건이 해당되면 메소드 종료 (필수)
-            return;
+                //조건이 해당되면 메소드 종료 (필수)
+                return;
+            }
+        }catch (Exception e){
+            request.setAttribute("exception", e);
         }
 
         System.out.println("authorization now");

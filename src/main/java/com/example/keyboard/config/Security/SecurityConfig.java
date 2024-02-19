@@ -5,6 +5,7 @@ import com.example.keyboard.config.Filter.LoginFilter;
 import com.example.keyboard.config.JWT.JWTUtil;
 import com.example.keyboard.config.Redis.RedisUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.flogger.Flogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,13 +16,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -35,6 +35,7 @@ public class SecurityConfig  {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RedisUtils redisUtils;
+
 
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RedisUtils redisUtils) {
         this.authenticationConfiguration = authenticationConfiguration;
@@ -54,64 +55,63 @@ public class SecurityConfig  {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        try {
-            http
-                    .csrf((auth) -> auth.disable());
-            //From 로그인 방식 disable
-            http
-                    .formLogin((auth) -> auth.disable());
 
-            //http basic 인증 방식 disable
-            http
-                    .httpBasic((auth) -> auth.disable());
+        http
+                .csrf((auth) -> auth.disable());
+        //From 로그인 방식 disable
+        http
+                .formLogin((auth) -> auth.disable());
 
-            //JWTFilter 등록
-            http
-                    .addFilterBefore(new JWTFilter(jwtUtil, redisUtils), LoginFilter.class);
+        //http basic 인증 방식 disable
+        http
+                .httpBasic((auth) -> auth.disable());
 
-            //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
-            http
-                    .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisUtils), UsernamePasswordAuthenticationFilter.class);
+        //JWTFilter 등록
+        http
+                .addFilterBefore(new JWTFilter(jwtUtil, redisUtils), LoginFilter.class);
 
-            http
-                    .anonymous((auth) -> auth.key("unique"));
+        //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
+        http
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisUtils), UsernamePasswordAuthenticationFilter.class);
 
-            //경로별 인가 작업
-            http
+        http
+                .anonymous((auth) -> auth.key("unique"));
 
-                    .authorizeHttpRequests((auth) -> auth
-                            .requestMatchers("/").anonymous()
-                            .requestMatchers("/error").anonymous()
-                            .anyRequest().permitAll());
+        //경로별 인가 작업
+        http
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/").anonymous()
+                        .requestMatchers("/error").anonymous()
+                        .requestMatchers("/health").permitAll()
+                        .anyRequest().authenticated());
 
-            http
-                    .sessionManagement((session) -> session
-                            .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-            http
-                    .cors((corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-                        @Override
-                        public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+        http
+                .cors((corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+                    @Override
+                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 
-                            CorsConfiguration configuration = new CorsConfiguration();
+                        CorsConfiguration configuration = new CorsConfiguration();
 
-                            configuration.setAllowedOrigins(Collections.singletonList("http://3.34.152.132:3000"));
-    //                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-                            configuration.setAllowedMethods(Collections.singletonList("*"));
-                            configuration.setAllowCredentials(true);
-                            configuration.setAllowedHeaders(Collections.singletonList("*"));
-                            configuration.setMaxAge(3600L);
+                        configuration.setAllowedOrigins(Collections.singletonList("http://3.34.152.132:3000"));
+//                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                        configuration.setAllowedMethods(Collections.singletonList("*"));
+                        configuration.setAllowCredentials(true);
+                        configuration.setAllowedHeaders(Collections.singletonList("*"));
+                        configuration.setMaxAge(3600L);
 
-                            configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 
-                            return configuration;
-                        }
-                    })));
-        }catch (AccessDeniedException | AuthenticationException ex){
-            System.out.println("엑세스 거부됨");
-        }
+                        return configuration;
+                    }
+                })));
+
 
         return http.build();
     }
