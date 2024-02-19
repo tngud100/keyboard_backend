@@ -5,9 +5,11 @@ import com.example.keyboard.config.Filter.LoginFilter;
 import com.example.keyboard.config.JWT.JWTUtil;
 import com.example.keyboard.config.Redis.RedisUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.flogger.Flogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authorization.AuthorizationDecision;
@@ -15,6 +17,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -53,6 +56,7 @@ public class SecurityConfig  {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        try {
         http
                 .csrf((auth) -> auth.disable());
         //From 로그인 방식 disable
@@ -74,18 +78,6 @@ public class SecurityConfig  {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-//                        .requestMatchers("/path/to/public/api").permitAll()
-//                        .requestMatchers("/product/**").hasAuthority("ROLE_ADMIN")
-//                        .requestMatchers("/api/check").hasAuthority("ROLE_ADMIN")
-//                        .requestMatchers("/api/logout", "/api/join/send", "/api/join/verify").permitAll()
-//                        .anyRequest().authenticated());
-                          .requestMatchers("/", "/error").permitAll()
-//                          .anyRequest().access((authentication, object) ->{
-//                              if(authentication.get() instanceof AnonymousAuthenticationToken){
-//                                  return new AuthorizationDecision(false);
-//                              }
-//                              return new AuthorizationDecision(true);
-//                          })
                           .anyRequest().permitAll());
 
         http
@@ -111,7 +103,9 @@ public class SecurityConfig  {
                         return configuration;
                     }
                 })));
-
+        }catch (AccessDeniedException | AuthenticationException ex){
+            System.out.println("엑세스 거부됨");
+        }
 
         return http.build();
     }
