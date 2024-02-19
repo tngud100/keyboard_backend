@@ -60,9 +60,6 @@ public class ProductController {
     }
 
     //상세 상품 가져오기
-
-
-
     @GetMapping("/detail/get")
     public ResponseEntity<Object> selectProductDetailList(@RequestParam(value="product_id") Long productId){
         try{

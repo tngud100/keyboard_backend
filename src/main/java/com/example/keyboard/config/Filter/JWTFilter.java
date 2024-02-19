@@ -41,6 +41,8 @@ public class JWTFilter extends OncePerRequestFilter {
         if (authorization == null || !authorization.startsWith("Bearer ")) {
 
             System.out.println("token null");
+            System.out.println(SecurityContextHolder.getContext().getAuthentication());
+
             filterChain.doFilter(request, response);
 
             //조건이 해당되면 메소드 종료 (필수)

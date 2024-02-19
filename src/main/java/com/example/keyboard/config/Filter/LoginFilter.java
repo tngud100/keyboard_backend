@@ -20,7 +20,6 @@ import java.util.Iterator;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-
     private final RedisUtils redisUtils;
 
     public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RedisUtils redisUtils) {

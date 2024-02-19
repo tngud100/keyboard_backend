@@ -1,13 +1,16 @@
-package com.example.keyboard.config;
+package com.example.keyboard.config.Security;
 
 import com.example.keyboard.config.Filter.JWTFilter;
 import com.example.keyboard.config.Filter.LoginFilter;
 import com.example.keyboard.config.JWT.JWTUtil;
 import com.example.keyboard.config.Redis.RedisUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -23,7 +27,7 @@ import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig  {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
@@ -76,6 +80,13 @@ public class SecurityConfig {
 //                        .requestMatchers("/api/logout", "/api/join/send", "/api/join/verify").permitAll()
 //                        .anyRequest().authenticated());
                           .requestMatchers("/health").permitAll()
+                          .anyRequest().access((authentication, object) ->{
+                              if(authentication.get() instanceof AnonymousAuthenticationToken){
+                                  System.out.println("익명");
+                                  return new AuthorizationDecision(false);
+                              }
+                              return new AuthorizationDecision(true);
+                          })
                           .anyRequest().permitAll());
 
         http
@@ -90,6 +101,7 @@ public class SecurityConfig {
                         CorsConfiguration configuration = new CorsConfiguration();
 
                         configuration.setAllowedOrigins(Collections.singletonList("http://3.34.152.132:3000"));
+//                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
