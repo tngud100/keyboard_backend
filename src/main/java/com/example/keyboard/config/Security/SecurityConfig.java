@@ -79,14 +79,13 @@ public class SecurityConfig  {
 //                        .requestMatchers("/api/check").hasAuthority("ROLE_ADMIN")
 //                        .requestMatchers("/api/logout", "/api/join/send", "/api/join/verify").permitAll()
 //                        .anyRequest().authenticated());
-                          .requestMatchers("/health").permitAll()
-                          .anyRequest().access((authentication, object) ->{
-                              if(authentication.get() instanceof AnonymousAuthenticationToken){
-                                  System.out.println("익명");
-                                  return new AuthorizationDecision(false);
-                              }
-                              return new AuthorizationDecision(true);
-                          })
+                          .requestMatchers("/", "/error").permitAll()
+//                          .anyRequest().access((authentication, object) ->{
+//                              if(authentication.get() instanceof AnonymousAuthenticationToken){
+//                                  return new AuthorizationDecision(false);
+//                              }
+//                              return new AuthorizationDecision(true);
+//                          })
                           .anyRequest().permitAll());
 
         http
