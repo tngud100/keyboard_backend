@@ -57,52 +57,52 @@ public class SecurityConfig  {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         try {
-        http
-                .csrf((auth) -> auth.disable());
-        //From 로그인 방식 disable
-        http
-                .formLogin((auth) -> auth.disable());
+            http
+                    .csrf((auth) -> auth.disable());
+            //From 로그인 방식 disable
+            http
+                    .formLogin((auth) -> auth.disable());
 
-        //http basic 인증 방식 disable
-        http
-                .httpBasic((auth) -> auth.disable());
+            //http basic 인증 방식 disable
+            http
+                    .httpBasic((auth) -> auth.disable());
 
-        //JWTFilter 등록
-        http
-                .addFilterBefore(new JWTFilter(jwtUtil, redisUtils), LoginFilter.class);
+            //JWTFilter 등록
+            http
+                    .addFilterBefore(new JWTFilter(jwtUtil, redisUtils), LoginFilter.class);
 
-        //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
-        http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisUtils), UsernamePasswordAuthenticationFilter.class);
+            //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
+            http
+                    .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisUtils), UsernamePasswordAuthenticationFilter.class);
 
-        //경로별 인가 작업
-        http
-                .authorizeHttpRequests((auth) -> auth
-                          .anyRequest().permitAll());
+            //경로별 인가 작업
+            http
+                    .authorizeHttpRequests((auth) -> auth
+                              .anyRequest().authenticated());
 
-        http
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            http
+                    .sessionManagement((session) -> session
+                            .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        http
-                .cors((corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+            http
+                    .cors((corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+                        @Override
+                        public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 
-                        CorsConfiguration configuration = new CorsConfiguration();
+                            CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Collections.singletonList("http://3.34.152.132:3000"));
-//                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-                        configuration.setAllowedMethods(Collections.singletonList("*"));
-                        configuration.setAllowCredentials(true);
-                        configuration.setAllowedHeaders(Collections.singletonList("*"));
-                        configuration.setMaxAge(3600L);
+                            configuration.setAllowedOrigins(Collections.singletonList("http://3.34.152.132:3000"));
+    //                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                            configuration.setAllowedMethods(Collections.singletonList("*"));
+                            configuration.setAllowCredentials(true);
+                            configuration.setAllowedHeaders(Collections.singletonList("*"));
+                            configuration.setMaxAge(3600L);
 
-                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                            configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 
-                        return configuration;
-                    }
-                })));
+                            return configuration;
+                        }
+                    })));
         }catch (AccessDeniedException | AuthenticationException ex){
             System.out.println("엑세스 거부됨");
         }
