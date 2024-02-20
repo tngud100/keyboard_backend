@@ -87,6 +87,7 @@ public class SecurityConfig  {
                 .authorizeHttpRequests((auth) -> auth
 //                        .requestMatchers("/").anonymous()
 //                        .requestMatchers("/error").anonymous()
+                        .requestMatchers("/health-check").permitAll()
                         .requestMatchers("/**").permitAll()
 //                        .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated());
@@ -102,8 +103,8 @@ public class SecurityConfig  {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-//                        configuration.setAllowedOrigins(Collections.singletonList("http://3.34.152.132:3000"));
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                        configuration.setAllowedOrigins(Collections.singletonList("http://3.34.152.132:3000"));
+//                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
