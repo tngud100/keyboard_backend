@@ -58,7 +58,7 @@ public class SecurityConfig  {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
-        return (web) -> web.ignoring().requestMatchers("/**","/**/health");
+        return (web) -> web.ignoring().requestMatchers("/health-check");
     }
 
     @Bean
@@ -89,7 +89,7 @@ public class SecurityConfig  {
 //                        .requestMatchers("/error").anonymous()
                         .requestMatchers("/health-check").permitAll()
                         .requestMatchers("/**").permitAll()
-//                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated());
 
         http
