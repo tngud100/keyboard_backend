@@ -7,11 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
+@RequiredArgsConstructor
 public class StatusCheckController {
-    @GetMapping("/")
-    public String root() {
-        return "index";
-    }
     @GetMapping("/health")
     public ResponseEntity<Void> checkHealthStatus() {
         try {
