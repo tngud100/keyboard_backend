@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class StatusCheckController {
     @GetMapping("/health")
-    public ResponseEntity<Void> checkHealthStatus() {
+    public ResponseEntity<String> checkHealthStatus() {
         try {
             System.out.println("check verify");
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>("check verify", HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
