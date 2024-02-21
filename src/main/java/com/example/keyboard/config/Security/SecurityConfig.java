@@ -88,7 +88,7 @@ public class SecurityConfig  {
 //                        .requestMatchers("/").anonymous()
 //                        .requestMatchers("/error").anonymous()
                         .requestMatchers("/health").permitAll()
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated());
 
         http
