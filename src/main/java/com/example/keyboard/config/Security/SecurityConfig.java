@@ -58,7 +58,7 @@ public class SecurityConfig  {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
-        return (web) -> web.ignoring().requestMatchers("/health-check");
+        return (web) -> web.ignoring().requestMatchers("/health");
     }
 
     @Bean
