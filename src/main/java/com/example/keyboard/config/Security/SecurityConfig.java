@@ -87,6 +87,8 @@ public class SecurityConfig  {
                 .authorizeHttpRequests((auth) -> auth
 //                        .requestMatchers("/").anonymous()
 //                        .requestMatchers("/error").anonymous()
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers("/health").permitAll()
                         .requestMatchers("/**").permitAll()
