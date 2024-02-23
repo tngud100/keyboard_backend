@@ -21,7 +21,7 @@ public class StatusCheckController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/check")
+    @GetMapping("/check-get")
     public ResponseEntity<String> check() {
         try {
             System.out.println("check");
