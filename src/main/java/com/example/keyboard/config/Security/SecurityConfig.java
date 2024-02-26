@@ -65,7 +65,7 @@ public class SecurityConfig  {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf((auth) -> auth.disable());
+                .csrf((csrf) -> csrf.disable());
         //From 로그인 방식 disable
         http
                 .formLogin((auth) -> auth.disable());
@@ -84,15 +84,19 @@ public class SecurityConfig  {
 
         //경로별 인가 작업
         http
-                .authorizeHttpRequests((auth) -> auth
+//                .authorizeHttpRequests((auth) -> auth
 //                        .requestMatchers("/").anonymous()
 //                        .requestMatchers("/error").anonymous()
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers("/api/login").permitAll()
-                        .requestMatchers("/api/health").permitAll()
-                        .requestMatchers("/health").permitAll()
-                        .requestMatchers("/**").permitAll()
-                        .anyRequest().authenticated());
+//                        .requestMatchers("/api/login").permitAll()
+//                        .requestMatchers("/api/health").permitAll()
+//                        .requestMatchers("/health").permitAll()
+//                        .requestMatchers("/**").permitAll()
+//                        .requestMatchers("/login").permitAll()
+//                        .anyRequest().authenticated());
+                .authorizeHttpRequests((auth) -> auth
+                                .requestMatchers("/login","/api/health","/api/check-get","/api/join").permitAll()
+                                .anyRequest().authenticated()
+                        );
 
         http
                 .sessionManagement((session) -> session
