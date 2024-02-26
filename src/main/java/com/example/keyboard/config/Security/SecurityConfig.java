@@ -84,6 +84,10 @@ public class SecurityConfig  {
 
         //경로별 인가 작업
         http
+                .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/check-get","/","/login").permitAll());
+        http
+                .authorizeHttpRequests((auth) -> auth.anyRequest().authenticated());
+
 //                .authorizeHttpRequests((auth) -> auth
 //                        .requestMatchers("/").anonymous()
 //                        .requestMatchers("/error").anonymous()
@@ -92,11 +96,6 @@ public class SecurityConfig  {
 //                        .requestMatchers("/health").permitAll()
 //                        .requestMatchers("/**").permitAll()
 //                        .requestMatchers("/login").permitAll()
-//                        .anyRequest().authenticated());
-                .authorizeHttpRequests((auth) -> auth
-                                .requestMatchers("/login","/api/health","/api/check-get","/api/join").permitAll()
-                                .anyRequest().authenticated()
-                        );
 
         http
                 .sessionManagement((session) -> session
