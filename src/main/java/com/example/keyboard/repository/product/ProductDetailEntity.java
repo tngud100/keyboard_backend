@@ -1,4 +1,4 @@
-package com.example.keyboard.entity.product;
+package com.example.keyboard.repository.product;
 
 import lombok.Data;
 

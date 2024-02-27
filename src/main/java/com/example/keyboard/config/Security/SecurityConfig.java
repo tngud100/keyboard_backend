@@ -86,11 +86,12 @@ public class SecurityConfig  {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .anyRequest().permitAll());
-//                        .requestMatchers("/").permitAll()
-//                        .requestMatchers("/api/**").permitAll()
-//                        .requestMatchers("/login").permitAll()
-//                        .anyRequest().authenticated());
+//                        .anyRequest().permitAll());
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/api/health").permitAll()
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/api/list/get").permitAll()
+                        .anyRequest().authenticated());
 
         //                .authorizeHttpRequests((auth) -> auth
 //                        .requestMatchers("/").anonymous()
@@ -114,7 +115,7 @@ public class SecurityConfig  {
                         CorsConfiguration configuration = new CorsConfiguration();
 
                         configuration.setAllowedOrigins(Collections.singletonList("http://3.34.152.132:3000"));
-//                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+//                        configuration.setAllowedOrigins(Collections.singletonList("http://127.0.0.1:3000"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
