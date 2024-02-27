@@ -86,10 +86,11 @@ public class SecurityConfig  {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/login").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().permitAll());
+//                        .requestMatchers("/").permitAll()
+//                        .requestMatchers("/api/**").permitAll()
+//                        .requestMatchers("/login").permitAll()
+//                        .anyRequest().authenticated());
 
         //                .authorizeHttpRequests((auth) -> auth
 //                        .requestMatchers("/").anonymous()
