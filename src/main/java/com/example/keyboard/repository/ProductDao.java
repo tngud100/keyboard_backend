@@ -1,7 +1,7 @@
 package com.example.keyboard.repository;
 
-import com.example.keyboard.repository.product.ProductDetailEntity;
-import com.example.keyboard.repository.product.ProductEntity;
+import com.example.keyboard.entity.product.ProductDetailEntity;
+import com.example.keyboard.entity.product.ProductEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
