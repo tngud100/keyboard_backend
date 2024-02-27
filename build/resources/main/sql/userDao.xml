@@ -6,17 +6,17 @@
 <mapper namespace="com.example.keyboard.repository.AuthDao">
     <!-- 로그인 인증 -->
     <select id="findByLoginId" parameterType="String" resultType="MemberEntity">
-        select * from Member where LOGIN_ID = #{LOGIN_ID}
+        select * from member where LOGIN_ID = #{LOGIN_ID}
     </select>
 
     <!-- 중복확인 -->
     <select id="existsById" parameterType="String" resultType="String">
-        select LOGIN_ID from Member where LOGIN_ID = #{LOGIN_ID}
+        select LOGIN_ID from member where LOGIN_ID = #{LOGIN_ID}
     </select>
 
     <!--  회원가입  -->
     <insert id="join" parameterType="MemberEntity">
-        INSERT INTO Member(LOGIN_ID, PASSWORD, USER_NAME, PHONE_NUM, ADDRESS, ZIPCODE, ADDRESS_DETAIL, EMAIL, BIRTHDAY)
+        INSERT INTO member(LOGIN_ID, PASSWORD, USER_NAME, PHONE_NUM, ADDRESS, ZIPCODE, ADDRESS_DETAIL, EMAIL, BIRTHDAY)
         VALUES(#{LOGIN_ID}, #{PASSWORD}, #{USER_NAME}, #{PHONE_NUM},#{ADDRESS}, #{ZIPCODE}, #{ADDRESS_DETAIL}, #{EMAIL}, #{BIRTHDAY})
     </insert>
 </mapper>
