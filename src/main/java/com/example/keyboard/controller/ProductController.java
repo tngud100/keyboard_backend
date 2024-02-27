@@ -3,6 +3,8 @@ package com.example.keyboard.controller;
 import com.example.keyboard.entity.product.ProductDetailEntity;
 import com.example.keyboard.entity.product.ProductEntity;
 import com.example.keyboard.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,13 +13,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "상품관련 API", description = "상품 CRUD API")
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class ProductController {
     public final ProductService productService;
 
-    // 상품 등록
+    @Operation(summary = "상품 리스트 등록")
     @PostMapping("/list/enroll")
     public ResponseEntity<Object> listEnroll(ProductEntity vo) {
         if (vo.getName() == null ||
@@ -37,7 +40,7 @@ public class ProductController {
         }
     }
 
-    // 상품 리스트 가져오기
+    @Operation(summary = "상품 리스트 GET")
     @GetMapping("/list/get")
     public ResponseEntity<Object> selectProductList(){
         try{
@@ -48,7 +51,7 @@ public class ProductController {
         }
     }
 
-    // 상세 상품 등록
+    @Operation(summary = "상세 상품 PUT", description = "상세 상품 등록")
     @PostMapping("/detail/enroll")
     public ResponseEntity<Object> insertProductDetail(ProductDetailEntity vo){
         try{
@@ -59,7 +62,8 @@ public class ProductController {
         }
     }
 
-    //상세 상품 가져오기
+    // 가져오기
+    @Operation(summary = "상세 상품 GET", description = "상품리스트의 상세 상품 가져오기")
     @GetMapping("/detail/get")
     public ResponseEntity<Object> selectProductDetailList(@RequestParam(value="product_id") Long productId){
         try{
@@ -71,6 +75,7 @@ public class ProductController {
     }
 
     // 상세 상품 기본값( 0이면 1로 설정, 1이면 0으로 설정 )
+    @Operation(summary = "상세 상품 디폴트 값 설정", description = "상품리스트의 상세 상품으로 상품리스트의 기본가격에 포함")
     @PutMapping("/detail/default")
     public ResponseEntity<Object> setProductDetailDefault(@RequestParam(value = "product_id") Long product_id, @RequestParam(value = "product_detail_id")  Integer product_detail_id){
         try{
@@ -82,6 +87,7 @@ public class ProductController {
     }
 
     // 상품 리스트 메인으로 설정
+    @Operation(summary = "메인 페이지 상품 등록", description = "상품 리스트를 메인으로 설정하는 버튼")
     @PutMapping("/list/setMain")
     public ResponseEntity<Object> setMainProduct(ProductEntity vo){
         try{
