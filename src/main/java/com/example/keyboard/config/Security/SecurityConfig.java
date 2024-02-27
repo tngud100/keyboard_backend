@@ -86,12 +86,12 @@ public class SecurityConfig  {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-//                        .anyRequest().permitAll());
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/api/health").permitAll()
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers("/api/list/get").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().permitAll());
+//                        .requestMatchers("/").permitAll()
+//                        .requestMatchers("/api/health").permitAll()
+//                        .requestMatchers("/login").permitAll()
+//                        .requestMatchers("/api/list/get").permitAll()
+//                        .anyRequest().authenticated());
 
         //                .authorizeHttpRequests((auth) -> auth
 //                        .requestMatchers("/").anonymous()
