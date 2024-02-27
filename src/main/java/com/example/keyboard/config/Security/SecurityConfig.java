@@ -66,6 +66,7 @@ public class SecurityConfig  {
 
         http
                 .csrf((csrf) -> csrf.disable());
+
         //From 로그인 방식 disable
         http
                 .formLogin((auth) -> auth.disable());
