@@ -5,7 +5,7 @@
 
 <mapper namespace="com.example.keyboard.repository.ProductDao">
     <!--  상품 등록  -->
-    <insert id="insertListProduct" parameterType="ProductEntity">
+    <insert id="insertProduct" parameterType="ProductEntity">
         INSERT INTO product(name, represent_picture, list_picture, LIST_BACK_PICTURE, DESC_PICTURE)
         VALUES(#{name}, #{represent_picture}, #{list_picture}, #{list_back_picture}, #{desc_picture})
     </insert>
@@ -16,24 +16,38 @@
     </select>
 
     <!--  상세 상품 등록  -->
-    <insert id ="insertProductDetail" useGeneratedKeys="true" keyProperty="product_detail_id" parameterType="ProductDetailEntity">
+    <insert id ="insertProductDetail" parameterType="ProductDetailEntity">
         INSERT INTO productdetail(product_id, name, amount, stock)
         VALUES (#{product_id}, #{name}, #{amount}, #{stock})
     </insert>
-    <insert id ="insertDetailCategory" parameterType="ProductDetailEntity">
-        INSERT INTO productcategory(product_detail_id, category_name, category_state)
-        VALUES (#{product_detail_id}, #{category_name}, #{category_state})
+
+    <!--  상품 카테고리 등록  -->
+    <insert id ="insertProductCategory" parameterType="ProductDetailEntity">
+        INSERT INTO productcategory(product_id, category_name, category_state)
+        VALUES (#{product_id}, #{category_name}, #{category_state})
     </insert>
+
+    <!--  상품 카테고리Id 가져오기  -->
+    <select id="selectProductCategoryId" parameterType="map"  resultType="Long">
+        SELECT * FROM productcategory WHERE product_id = #{productId} AND category_name = #{category_name}
+    </select>
+
+
+    <!--  상세 상품 카테고리 가져오기  -->
+    <select id="selectProductCategory" parameterType="Long"  resultType="ProductDetailEntity">
+        SELECT * FROM productcategory WHERE product_detail_id = #{productDetailId}
+    </select>
 
     <!--  상세 상품 가져오기  -->
     <select id="selectProductDetailList" parameterType="Long"  resultType="ProductDetailEntity">
         SELECT * FROM productdetail WHERE product_id = #{productId}
     </select>
 
-    <!--  상세 상품 카테고리 가져오기  -->
-    <select id="selectProductCategory" parameterType="Long"  resultType="ProductDetailEntity">
-        SELECT * FROM productcategory WHERE product_detail_id = #{productDetailId}
+    <!--  모든 상세 상품 가져오기  -->
+    <select id="selectAllProductDetailList" resultType="ProductDetailEntity">
+        SELECT * FROM productdetail limit 20;
     </select>
+
 
     <!--  상세 상품 기본 값 세팅  -->
     <update id="updateProductDefault">
@@ -42,7 +56,7 @@
         WHERE product_id = #{product_id} and product_detail_id = #{product_detail_id}
     </update>
 
-    <!--  상품 리스트 메인 사진 STATE, IMG 세팅  -->
+    <!--  상품 메인 사진 STATE, IMG 세팅  -->
     <update id="insertMainPic">
         UPDATE product
         SET main_picture = #{main_pic_path}
@@ -54,5 +68,34 @@
         WHERE product_id = #{product_id}
     </update>
 
+    <!--  메인으로 등록된 상품 가져오기  -->
+    <select id="selectMainProduct" resultType="ProductEntity">
+        SELECT * FROM product WHERE main_pic_state = 1;
+    </select>
 
+    <!--  상품 수정하기  -->
+    <update id="UpdateProduct">
+        UPDATE product
+        SET name = #{name},
+            represent_picture = #{represent_picture},
+            list_picture = #{list_picture},
+            list_back_picture = #{list_back_picture},
+            desc_picture = #{desc_picture}
+        WHERE product_id = #{product_id}
+    </update>
+
+    <!--  상세 상품 수정하기  -->
+    <update id="updateProductDetail">
+        UPDATE productdetail
+        SET name = #{name},
+            amount = #{amount},
+            stock = #{stock}
+        WHERE product_detail_id = #{product_detail_id}
+    </update>
+    <update id="updateDetailCategory">
+        UPDATE productcategory
+        SET category_name = #{category_name},
+            category_state = #{category_state}
+        WHERE product_detail_id = #{product_detail_id}
+    </update>
 </mapper>
