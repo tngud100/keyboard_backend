@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public class ProductDetailEntity {
     private Long product_detail_id;  // 상세 상품 일련번호
     private Long product_id;         // 상품 테이블 일련번호
-    private Long category_id;        // 카테고리 일련번호
+    private Long product_category_id;        // 카테고리 일련번호
     private String category_name;      // 카테고리 이름
     private int category_state;     // 카테고리 기본값        0: 기본값 X(default_state가 설정되지 않은 상세상품을 가져도 된다),
                                                         // 1: 기본값(default_state가 1인 상세상품을 최소 하나는 가져야 한다 )
