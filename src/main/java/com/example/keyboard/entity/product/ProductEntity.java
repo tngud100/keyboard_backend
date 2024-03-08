@@ -18,4 +18,5 @@ public class ProductEntity {
     private int amount;                   // 상품 금액       productDetail에서 product_id를 가지고 있는 가격을 모두 더한 값이다
     private LocalDate modified_date;      // 수정일자
     private LocalDate create_date;        // 등록일자
+    private String type;                  // 종류
 }

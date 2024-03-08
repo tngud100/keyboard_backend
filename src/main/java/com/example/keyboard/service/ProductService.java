@@ -20,6 +20,13 @@ public class ProductService {
     }
     // 상품 카테고리 등록
     public void enrollProductCategory(Long product_id, String category_name, int category_state) throws Exception {
+        // 해당 상품의 카테고리를 검색하고 최초 등록일시에 자동으로 category_state가 1로 지정
+        List<ProductDetailEntity> detailEntityVO = productDao.selectCategoryByProductId(product_id);
+
+        if (detailEntityVO == null || detailEntityVO.isEmpty()) {
+            category_state = 1;
+        }
+
         Map<String, Object > categoryInfo = new HashMap<>();
         categoryInfo.put("product_id",product_id);
         categoryInfo.put("category_name", category_name);
@@ -28,14 +35,22 @@ public class ProductService {
     }
     // 상세 상품 등록
     public void enrollProductDetail(ProductDetailEntity vo) throws  Exception{
+        // category_state의 값이 1이며 최초 등록이면 default를 1로 지정 하며 상세 상품의 가격이 상품 가격에 더해짐
+        int category_state = productDao.selectDetailCategoryState(vo.getProduct_id(), vo.getProduct_category_id());
+        List<ProductDetailEntity> detailList = productDao.selectSameCategoryDetailList(vo.getProduct_id(), vo.getProduct_category_id());
+
+        if(detailList.isEmpty() && category_state == 1){
+            vo.setDefault_state(1);
+            productDao.updateProductAmount(vo.getProduct_id(), vo.getAmount());
+        }
+
         productDao.insertProductDetail(vo);
     }
 
 
-
     // 상품 가져오기
     public List<ProductEntity> selectProductList() throws Exception{
-        return productDao.selectListProduct();
+        return productDao.selectAllProductList();
     }
     // 상품의 상세 상품 가져오기
     public List<ProductDetailEntity> selectProductDetailList(Long productId) throws Exception{
@@ -86,38 +101,133 @@ public class ProductService {
     public List<ProductEntity> selectMainProductList() throws Exception{
         return productDao.selectMainProduct();
     }
-
+    // 이름 존재 여부 확인하기
+    public boolean isProductNameExists(String name) throws Exception{
+        int nameExist = productDao.isProductNameExists(name);
+        return nameExist > 0;
+    }
+    public boolean isDetailNameExists(Long product_id, String name) throws Exception{
+        int nameExist = productDao.isDetailNameExists(product_id, name);
+        return nameExist > 0;
+    }
+    public boolean isCategoryNameExists(Long product_id, String name) throws Exception{
+        int nameExist = productDao.isCategoryNameExists(product_id, name);
+        return nameExist > 0;
+    }
+    // 이름 가져오기
+    public String selectProductName(Long product_id) throws Exception{
+        return productDao.selectProductName(product_id);
+    }
+    public String selectCategoryName(Long product_category_id) throws Exception{
+        return productDao.selectCategoryName(product_category_id);
+    }
+    public String selectProductDetailName(Long product_detail_id) throws Exception{
+        return productDao.selectProductDetailName(product_detail_id);
+    }
 
 
     // 상품 수정하기
     public void updateProduct(ProductEntity vo) throws Exception{
-        productDao.UpdateProduct(vo);
+        productDao.updateProduct(vo);
     }
     // 상품 카테고리 수정
     public void updateProductCategory(Long product_id, Long product_category_id,
-                                      String category_name, int category_state) throws Exception{
+                                      String category_name) throws Exception{
         Map<String, Object > categoryInfo = new HashMap<>();
         categoryInfo.put("product_id",product_id);
         categoryInfo.put("product_category_id", product_category_id);
         categoryInfo.put("category_name", category_name);
-        categoryInfo.put("category_state", category_state);
         productDao.updateProductCategory(categoryInfo);
     }
     // 상세 상품 수정하기
     public void updateProductDetail(ProductDetailEntity vo) throws Exception{
         productDao.updateProductDetail(vo);
+
     }
 
 
     // 상세 상품 기본값 설정
     public void setProductDetailDefault(Long product_id, Long product_detail_id) throws Exception{
-        productDao.updateProductDefault(product_id, product_detail_id);
+        ProductDetailEntity detailVO = productDao.selectProductDetail(product_detail_id);
+        Long category_id = detailVO.getProduct_category_id(); // 카테고리 id
+
+        ProductDetailEntity categoryVO = productDao.selectProductCategory(category_id);
+        int category_state = categoryVO.getCategory_state(); // 카테고리 state
+
+        List<ProductDetailEntity> detailList = productDao.selectSameCategoryDetailList(product_id, category_id);
+
+        boolean hasDefaultDetail = false;
+        for (ProductDetailEntity vo : detailList) {
+            // 기존에 default가 1인 상세 상품이 있는지 확인
+            if (vo.getDefault_state() == 1 && vo.getProduct_detail_id().equals(detailVO.getProduct_detail_id())){
+                hasDefaultDetail = true;
+                break;
+            }
+        }
+
+        // 카테고리 state가 1이고, 자기 자신의 default를 1에서 0으로 만드려고 할때 예외 발생
+        if (category_state == 1 && hasDefaultDetail) {
+            throw new Exception("카테고리가 기본값이 1일때 상세상품 중 하나는 default가 1이 존재 해야합니다");
+        }
+
+        // 기존에 default가 1인 상세 상품이 있을 경우, 기존 default를 0으로 변경
+        // 선택한 상세 상품의 default를 1로 변경
+        // 상품에 상세상품의 가격 빼기
+        for (ProductDetailEntity vo : detailList) {
+            if (vo.getDefault_state() == 1) {
+                productDao.updateProductDefault(vo.getProduct_detail_id());
+                productDao.updateProductAmount(vo.getProduct_id(), -vo.getAmount());
+                break;
+            }
+        }
+
+        if(!hasDefaultDetail){
+            productDao.updateProductDefault(detailVO.getProduct_detail_id());
+            productDao.updateProductAmount(detailVO.getProduct_id(), detailVO.getAmount());
+        }
+
     }
-    // 카테고리 기본값 설정
+
+    // 상품 카테고리 기본값 설정
     public void setProductCategoryDefault(Long product_id, Long product_category_id) throws Exception{
-        productDao.updateCategoryDefault(product_id, product_category_id);
+        ProductDetailEntity categoryVO = productDao.selectProductCategory(product_category_id);
+        int category_state = categoryVO.getCategory_state();
+
+        // 카테고리를 1로 만들시에 상세 상품의 기본값이 설정되어 있어야 바뀜,즉 상세 상품의 기본값이 모두 0일때 카테고리 state가 1로 안바뀜
+        if(category_state == 0){
+            List<ProductDetailEntity> detailList = productDao.selectSameCategoryDetailList(product_id, product_category_id);
+            boolean isDefaultState = true;
+            for (ProductDetailEntity detailVO : detailList) {
+                if(detailVO.getDefault_state() == 1){
+                    isDefaultState = false;
+                    break;
+                }
+            }
+            if (isDefaultState) {
+                throw new Exception("상세 상품의 default값을 1로 바꿔주세요");
+            }
+        }
+        //category_state가 1에서 0으로 바뀔시에 해당 상품의 카테고리를 모두 검색하여 다른 카테고리의 state가 1이 없을 경우 error 반환
+        if(category_state == 1){
+            List<ProductDetailEntity> categoryList = productDao.selectCategoryByProductId(product_id);
+
+            // 다른 카테고리의 상태가 모두 0인지 확인
+            boolean isCheckCategoryState = true;
+            for (ProductDetailEntity vo : categoryList) {
+                int state = vo.getCategory_state();
+                if (!vo.getProduct_category_id().equals(product_category_id) && state == 1) {
+                    isCheckCategoryState = false;
+                    break;
+                }
+            }
+
+            // 다른 카테고리의 상태가 모두 0이 아닌 경우 오류 반환
+            if (isCheckCategoryState) {
+                throw new Exception("상품의 카테고리는 최소한 하나를 기본값으로 설정되어야 합니다");
+            }
+        }
+        productDao.updateCategoryDefault(product_category_id);
     }
-    // 상품 메인으로 설정
     public void setMainProduct(ProductEntity vo) throws Exception{
         String main_pic_path = vo.getMain_picture();
         Integer main_pic_state = vo.getMain_pic_state();
@@ -127,4 +237,15 @@ public class ProductService {
     }
 
 
+    // 상세상품 등록 시 또는 기본값 수정시에 가격이 상품에 반영되지 않음
+    public void deleteProduct(Long product_id) throws Exception{
+        List<ProductDetailEntity> detailList = productDao.selectProductDetailList(product_id);
+//        List<ProductDetailEntity> categoryList = productDao.selectCategoryByProductId(product_id);
+
+        for(ProductDetailEntity vo : detailList){
+            productDao.deleteProduct(vo.getProduct_id());
+            productDao.deleteCategory(vo.getProduct_category_id());
+            productDao.deleteProductDetail(vo.getProduct_detail_id());
+        }
+    }
 }
