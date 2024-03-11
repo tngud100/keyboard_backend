@@ -202,6 +202,12 @@ public class ProductController {
 
 
     /////////////////////////////////// delete ///////////////////////////////////
+    // JWTFilter 오류 발생 controll 확인하기
+    // 200 ok 떠도 데이터 베이스 그대로
+
+
+    // 연결 고리 : 상품 > 상품 카테고리 > 상세 상품
+
     // 상품 삭제
     // 1. 상품 삭제
     @Operation(summary = "상품삭제", description = "해당 상품 삭제하기(해당 상품에 관련된 카테고리 및 상세상품도 같이 삭제)")
@@ -209,24 +215,41 @@ public class ProductController {
     public ResponseEntity<Object> deleteProduct(@PathVariable("product_id") Long product_id){
         try{
             productService.deleteProduct(product_id);
-            return new ResponseEntity<>(product_id + "번 상품 삭제 완료", HttpStatus.OK);
+            return new ResponseEntity<>(product_id + "번 상품, 이에 해당되는 카테고리, 상세상품  모두 삭제", HttpStatus.OK);
+        } catch (Exception e){
+            // 예외 로깅
+            System.out.println(e);
+            return new ResponseEntity<>("상품 삭제 중 오류가 발생했습니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // 2. 상품 카테고리 삭제
+    @Operation(summary = "상품 카테고리 삭제", description = "해당 상품 삭제하기(해당 상품에 관련된 카테고리 및 상세상품도 같이 삭제)")
+    @DeleteMapping("/productCategory/{product_category_id}/delete")
+    public ResponseEntity<Object> deleteProductCategory(@PathVariable("product_category_id") Long product_category_id){
+        try{
+            productService.deleteProductCategory(product_category_id);
+            return new ResponseEntity<>(product_category_id + "번 카테고리, 이에 해당하는 상세상품 모두 삭제", HttpStatus.OK);
         } catch (Exception e){
             System.out.println(e.getMessage());
             return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
         }
     }
-    // 2. 상품 카테고리 삭제
-    // 3. 해당 상품의 상품 카테고리의 상세 상품 삭제
-    // 연결 고리 : 상품 > 상품 카테고리 > 상세 상품
-
-
-    // 카테고리 삭제
-    // 1. 상품의 카테고리 삭제
-    // 2. 상품 카테고리의 상세 상품 삭제
-    // 연결 고리 : 상품 카테고리 > 상세 상품
-
-
 
     // 상세 상품 삭제
     // 1. 상세 상품 삭제
+    @Operation(summary = "상세 상품 삭제", description = "해당 상품 삭제하기(해당 상품에 관련된 카테고리 및 상세상품도 같이 삭제)")
+    @DeleteMapping("/productDetail/{product_detail_id}/delete")
+    public ResponseEntity<Object> deleteProductDetail(@PathVariable("product_detail_id") Long product_detail_id){
+        try{
+            productService.deleteProductDetail(product_detail_id);
+            return new ResponseEntity<>(product_detail_id + "번 상세 상품 삭제", HttpStatus.OK);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
 }

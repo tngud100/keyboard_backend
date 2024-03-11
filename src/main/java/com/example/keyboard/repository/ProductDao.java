@@ -18,7 +18,6 @@ public interface ProductDao {
     public void insertProductCategory(Map<String, Object> categoryInfo) throws Exception;
     public void insertMainPic(@Param("product_id") Long product_id, @Param("main_pic_path") String main_pic_path, @Param("main_pic_state") Integer main_pic_state) throws Exception;
 
-
     public List<ProductEntity> selectAllProductList() throws Exception;
     public List<ProductDetailEntity> selectAllProductDetailList() throws Exception;
     public ProductDetailEntity selectProductDetail(@Param("product_detail_id") Long product_detail_id) throws Exception;
@@ -27,11 +26,13 @@ public interface ProductDao {
     public ProductDetailEntity selectProductCategory(@Param("product_category_id") Long product_category_id) throws Exception;
     public List<ProductDetailEntity> selectCategoryByProductId(@Param("product_id") Long product_id) throws Exception;
     public List<ProductDetailEntity> selectProductDetailList(@Param("product_id") Long product_id) throws Exception;
+    public List<ProductDetailEntity> selectProductDetailByCategory(@Param("product_category_id") Long product_category_id) throws Exception;
     public List<ProductEntity> selectMainProduct() throws Exception;
 
     public String selectCategoryName(@Param("product_category_id") Long product_category_id) throws Exception;
     public String selectProductName(@Param("product_id") Long product_id) throws Exception;
     public String selectProductDetailName(@Param("product_detail_id") Long product_detail_id) throws Exception;
+    public int selectProductDetailAmount(@Param("product_detail_id") Long product_detail_id) throws Exception;
 
 
     public int isProductNameExists(@Param("name") String name) throws Exception;
