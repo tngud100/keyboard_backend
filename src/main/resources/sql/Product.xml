@@ -24,47 +24,47 @@
 
     <!--  등록한 상품 가져오기  -->
     <select id="selectAllProductList" resultType="ProductEntity">
-        SELECT * FROM product;
+        SELECT * FROM product WHERE isdelete = 0;
     </select>
     <!--  메인으로 등록된 상품 가져오기  -->
     <select id="selectMainProduct" resultType="ProductEntity">
-        SELECT * FROM product WHERE main_pic_state = 1;
+        SELECT * FROM product WHERE main_pic_state = 1 AND isdelete = 0;
     </select>
     <!--  해당 상품의 상세 상품 가져오기  -->
     <select id="selectProductDetailList" parameterType="Long"  resultType="ProductDetailEntity">
-        SELECT * FROM productdetail WHERE product_id = #{product_id}
+        SELECT * FROM productdetail WHERE product_id = #{product_id} AND isdelete = 0;
     </select>
     <!--  해당 카테고리의 상세 상품 가져오기  -->
     <select id="selectProductDetailByCategory" parameterType="Long"  resultType="ProductDetailEntity">
-        SELECT * FROM productdetail WHERE product_category_id = #{product_category_id}
+        SELECT * FROM productdetail WHERE product_category_id = #{product_category_id} AND isdelete = 0;
     </select>
     <!--  상세 상품 가져오기  -->
     <select id="selectProductDetail" parameterType="Long"  resultType="ProductDetailEntity">
-        SELECT * FROM productdetail WHERE product_detail_id = #{product_detail_id}
+        SELECT * FROM productdetail WHERE product_detail_id = #{product_detail_id} AND isdelete = 0;
     </select>
     <!--  모든 상세 상품 가져오기  -->
     <select id="selectAllProductDetailList" resultType="ProductDetailEntity">
-        SELECT * FROM productdetail;
+        SELECT * FROM productdetail WHERE isdelete = 0;
     </select>
     <!--  상세 상품 카테고리 가져오기  -->
     <select id="selectProductCategory" parameterType="Long"  resultType="ProductDetailEntity">
-        SELECT * FROM productcategory WHERE product_category_id = #{product_category_id}
+        SELECT * FROM productcategory WHERE product_category_id = #{product_category_id} AND isdelete = 0;
     </select>
     <!--  상세 상품 카테고리 가져오기  -->
     <select id="selectCategoryByProductId" parameterType="Long"  resultType="ProductDetailEntity">
-        SELECT * FROM productcategory WHERE product_id = #{product_id}
+        SELECT * FROM productcategory WHERE product_id = #{product_id} AND isdelete = 0;
     </select>
     <!--  상품과 카테고리가 같은 상세 상품 리스트 가져오기  -->
     <select id="selectSameCategoryDetailList" resultType="ProductDetailEntity">
-        SELECT * FROM productdetail WHERE product_id = #{product_id} AND product_category_id = #{product_category_id}
+        SELECT * FROM productdetail WHERE product_id = #{product_id} AND product_category_id = #{product_category_id} AND isdelete = 0;
     </select>
     <!--  해당 상품 카테고리의 category_state 가져오기  -->
     <select id="selectDetailCategoryState" resultType="int">
-        SELECT category_state FROM productcategory WHERE product_id = #{product_id} AND product_category_id = #{product_category_id}
+        SELECT category_state FROM productcategory WHERE product_id = #{product_id} AND product_category_id = #{product_category_id} AND isdelete = 0;
     </select>
     <!--  상세 상품의 가격 가져오기  -->
     <select id="selectProductDetailAmount" resultType="int">
-        SELECT amount FROM productdetail WHERE product_detail_id = #{product_detail_id}
+        SELECT amount FROM productdetail WHERE product_detail_id = #{product_detail_id} AND isdelete = 0;
     </select>
 
 
@@ -84,14 +84,14 @@
             list_picture = #{list_picture},
             list_back_picture = #{list_back_picture},
             desc_picture = #{desc_picture}
-        WHERE product_id = #{product_id}
+        WHERE product_id = #{product_id} AND isdelete = 0;
     </update>
 
     <!--  상품 카테고리 수정하기  -->
     <update id="updateProductCategory">
         UPDATE productcategory
         SET category_name = #{category_name}
-        WHERE product_id = #{product_id} AND product_category_id = #{product_category_id}
+        WHERE product_id = #{product_id} AND product_category_id = #{product_category_id} AND isdelete = 0;
     </update>
 
     <!--  상세 상품 수정하기  -->
@@ -100,14 +100,14 @@
         SET name = #{name},
             amount = #{amount},
             stock = #{stock}
-        WHERE product_detail_id = #{product_detail_id}
+        WHERE product_detail_id = #{product_detail_id} AND isdelete = 0;
     </update>
 
     <!--  상세 상품의 기본 값 가격 상품 가격에 추가하기   -->
    <update id="updateProductAmount">
         UPDATE product
         SET amount = amount + #{amount}
-        WHERE product_id = #{product_id}
+        WHERE product_id = #{product_id} AND isdelete = 0;
     </update>
 
 
@@ -118,42 +118,42 @@
     <update id="updateProductDefault">
         UPDATE productdetail
         SET default_state = IF(default_state = 0, 1, 0)
-        WHERE product_detail_id = #{product_detail_id}
+        WHERE product_detail_id = #{product_detail_id} AND isdelete = 0;
     </update>
     <!--  카테고리 기본 값 세팅  -->
     <update id="updateCategoryDefault">
         UPDATE productcategory
         SET category_state = IF(category_state = 0, 1, 0)
-        WHERE product_category_id = #{product_category_id}
+        WHERE product_category_id = #{product_category_id} AND isdelete = 0;
     </update>
     <!--  상품 메인 사진 STATE, IMG 세팅  -->
     <update id="insertMainPic">
         UPDATE product
         SET main_picture = #{main_pic_path}, main_pic_state = #{main_pic_state}
-        WHERE product_id = #{product_id};
+        WHERE product_id = #{product_id} AND isdelete = 0;
     </update>
 
     <!--  이름 존재 여부 확인하기  -->
     <select id="isProductNameExists" parameterType="String" resultType="int">
-        SELECT COUNT(*) FROM product WHERE name = #{name}
+        SELECT COUNT(*) FROM product WHERE name = #{name} AND isdelete = 0;
     </select>
     <select id="isDetailNameExists" parameterType="map" resultType="int">
-        SELECT COUNT(*) FROM productdetail WHERE name = #{name} AND product_id = #{product_id}
+        SELECT COUNT(*) FROM productdetail WHERE name = #{name} AND product_id = #{product_id} AND isdelete = 0;
     </select>
     <select id="isCategoryNameExists" parameterType="map" resultType="int">
-        SELECT COUNT(*) FROM productcategory WHERE category_name = #{category_name} AND product_id = #{product_id}
+        SELECT COUNT(*) FROM productcategory WHERE category_name = #{category_name} AND product_id = #{product_id} AND isdelete = 0;
     </select>
 
 
     <!--  이름 가져오기 -->
     <select id="selectProductName" parameterType="Long" resultType="String">
-        SELECT name FROM product WHERE product_id = #{product_id}
+        SELECT name FROM product WHERE product_id = #{product_id} AND isdelete = 0;
     </select>
     <select id="selectCategoryName" parameterType="Long" resultType="String">
-        SELECT category_name FROM productcategory WHERE product_category_id = #{product_category_id}
+        SELECT category_name FROM productcategory WHERE product_category_id = #{product_category_id} AND isdelete = 0;
     </select>
     <select id="selectProductDetailName" parameterType="Long" resultType="String">
-        SELECT name FROM productdetail WHERE product_detail_id = #{product_detail_id}
+        SELECT name FROM productdetail WHERE product_detail_id = #{product_detail_id} AND isdelete = 0;
     </select>
 
 

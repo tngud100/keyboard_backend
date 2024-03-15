@@ -276,7 +276,10 @@ public class ProductService {
     public void deleteProductDetail(Long product_detail_id) throws Exception{
         ProductDetailEntity detailVO = productDao.selectProductDetail(product_detail_id);
 
-        if(detailVO.getCategory_state() == 1 && detailVO.getDefault_state() == 1){
+        Long category = detailVO.getProduct_category_id();
+        ProductDetailEntity categoryVO = productDao.selectProductCategory(category);
+
+        if(categoryVO.getCategory_state() == 1 && detailVO.getDefault_state() == 1){
             throw new Exception("카테고리의 state가 1이며, 상세상품이 기본 값으로 설정되어 있으면 삭제 할 수 없습니다. 상세 상품 혹은 카테고리의 기본값을 바꿔주세요");
         }
 
