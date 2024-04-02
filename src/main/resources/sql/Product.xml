@@ -5,9 +5,9 @@
 
 <mapper namespace="com.example.keyboard.repository.ProductDao">
     <!--  상품 등록  -->
-    <insert id="insertProduct" parameterType="ProductEntity">
-        INSERT INTO product(name, represent_picture, list_picture, list_back_picture, desc_picture, type)
-        VALUES(#{name}, #{represent_picture}, #{list_picture}, #{list_back_picture}, #{desc_picture}, #{type})
+    <insert id="insertProduct">
+        INSERT INTO product(name, type)
+        VALUES(#{name}, #{type})
     </insert>
     <!--  상품 카테고리 등록  -->
     <insert id ="insertProductCategory" parameterType="map">

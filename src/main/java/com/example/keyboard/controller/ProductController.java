@@ -2,6 +2,7 @@ package com.example.keyboard.controller;
 
 import com.example.keyboard.entity.product.ProductDetailEntity;
 import com.example.keyboard.entity.product.ProductEntity;
+import com.example.keyboard.entity.product.ProductImageEntity;
 import com.example.keyboard.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,11 +21,12 @@ import java.util.List;
 @RequestMapping("/api")
 public class ProductController {
     public final ProductService productService;
+    public final ImageController imgController;
 
     /////////////////////////////////// POST ///////////////////////////////////
     @Operation(summary = "상품 등록")
     @PostMapping("/product/enroll")
-    public ResponseEntity<Object> productEnroll(ProductEntity vo) {
+    public ResponseEntity<Object> productEnroll(ProductImageEntity vo) {
         try {
             // 중복된 상품명 검사 및 이미지 업로드 경로 가져오기
             if (vo.getName() == null ||
@@ -32,14 +34,17 @@ public class ProductController {
                     vo.getList_back_picture() == null ||
                     vo.getRepresent_picture() == null ||
                     vo.getDesc_picture() == null) {
-                return ResponseEntity.badRequest().body("모두 입력해 주세요");
+                return ResponseEntity.badRequest().body("모두 기입해 주세요");
             }
 
             if (productService.isProductNameExists(vo.getName())) {
                 return ResponseEntity.badRequest().body("이미 존재하는 상품입니다.");
             }
+            String name = vo.getName();
+            String type = vo.getProduct_type();
 
-            productService.productEnroll(vo);
+            imgController.uploadImage(vo);
+            productService.productEnroll(name, type);
             return new ResponseEntity<>("상품 등록 완료", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

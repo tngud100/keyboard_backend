@@ -13,7 +13,7 @@ import java.util.Map;
 @Repository
 public interface ProductDao {
 
-    public void insertProduct(ProductEntity productVO) throws Exception;
+    public void insertProduct(@Param("name") String name, @Param("type") String type) throws Exception;
     public void insertProductDetail(ProductDetailEntity productDetailVO) throws Exception;
     public void insertProductCategory(Map<String, Object> categoryInfo) throws Exception;
     public void insertMainPic(@Param("product_id") Long product_id, @Param("main_pic_path") String main_pic_path, @Param("main_pic_state") Integer main_pic_state) throws Exception;

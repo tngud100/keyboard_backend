@@ -1,55 +1,74 @@
-package com.example.keyboard.controller;
+    package com.example.keyboard.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+    import com.example.keyboard.entity.product.ImageEntity;
+    import com.example.keyboard.entity.product.ProductImageEntity;
+    import com.example.keyboard.repository.ProductDao;
+    import com.example.keyboard.service.ImgUploadService;
+    import io.swagger.v3.oas.annotations.Operation;
+    import io.swagger.v3.oas.annotations.tags.Tag;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.stereotype.Component;
+    import org.springframework.web.bind.annotation.*;
+    import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+    import java.io.File;
+    import java.util.ArrayList;
+    import java.util.List;
 
-@Tag(name = "이미지 API", description = "이미지 등록 API")
-@RestController
-@RequestMapping("/api/images")
-public class ImageController {
+    @Tag(name = "이미지 API", description = "이미지 등록 API")
+    @Component
+    public class ImageController {
 
-    @Value("${upload.path}") // application.properties에 설정된 이미지 업로드 경로를 가져옵니다.
-    private String uploadPath;
+        private final ImgUploadService imgUploadService;
 
-    @Operation(summary = "이미지 업로드", description = "서버에 이미지 등록 후 경로를 return")
-    @PostMapping("/upload")
-    public String uploadImage(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return "Please select a file to upload";
+        public ImageController(ImgUploadService imgUploadService) {
+            this.imgUploadService = imgUploadService;
         }
 
-        try {
-            // 이미지를 지정된 경로에 저장합니다.
-            String filePath = uploadPath + File.separator + file.getOriginalFilename();
-            file.transferTo(new File(filePath));
-            return filePath;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Failed to upload file";
-        }
-    }
+        @Operation(summary = "이미지 업로드")
+        public ResponseEntity<Object> uploadImage(ProductImageEntity productImageEntity) throws Exception {
+            try{
+                Long product_id = productImageEntity.getProduct_id();
+                MultipartFile list_picture = productImageEntity.getList_picture();
+                MultipartFile represent_picture = productImageEntity.getRepresent_picture();
+                MultipartFile list_back_picture = productImageEntity.getList_back_picture();
+                List<MultipartFile> desc_picture = productImageEntity.getDesc_picture();
 
-    @Operation(summary = "이미지 업로드 취소", description = "서버에 이미지 업로드를 취소합니다.")
-    @DeleteMapping("/cancel")
-    public ResponseEntity<String> cancelUpload(@RequestParam("filePath") String filePath) {
-        File file = new File(filePath);
-        if (file.exists()) {
-            if (file.delete()) {
-                return ResponseEntity.ok("File upload canceled successfully");
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to cancel file upload");
+                List<MultipartFile> picture = new ArrayList<>();
+                picture.add(list_picture);
+                picture.add(represent_picture);
+                picture.add(list_back_picture);
+
+                for(int i = 0; i < picture.size(); i ++){
+                    ImageEntity imgEntity = imgUploadService.uploadImg(picture.get(i), product_id);
+                    imgUploadService.saveImgPath(imgEntity);
+                }
+                for( MultipartFile desc_pic : desc_picture){
+                    ImageEntity imgEntity = imgUploadService.uploadImg(desc_pic, product_id);
+                    imgUploadService.saveImgPath(imgEntity);
+                }
+
+                return new ResponseEntity<>("이미지 업로드 완료", HttpStatus.OK);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
             }
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found");
         }
-    }
 
-}
+        @Operation(summary = "이미지 업로드 취소")
+        @DeleteMapping("/cancel")
+        public ResponseEntity<String> cancelUpload(@RequestParam("filePath") String filePath) {
+            File file = new File(filePath);
+            if (file.exists()) {
+                if (file.delete()) {
+                    return ResponseEntity.ok("File upload canceled successfully");
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to cancel file upload");
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found");
+            }
+        }
+
+    }

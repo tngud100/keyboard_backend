@@ -1,5 +1,6 @@
 package com.example.keyboard.service;
 
+import com.example.keyboard.entity.product.ImageEntity;
 import com.example.keyboard.entity.product.ProductDetailEntity;
 import com.example.keyboard.entity.product.ProductEntity;
 import com.example.keyboard.repository.ProductDao;
@@ -15,8 +16,8 @@ public class ProductService {
     public final ProductDao productDao;
 
     // 상품 등록
-    public void productEnroll(ProductEntity vo) throws Exception {
-        productDao.insertProduct(vo);
+    public void productEnroll(String name, String type) throws Exception {
+        productDao.insertProduct(name, type);
     }
     // 상품 카테고리 등록
     public void enrollProductCategory(Long product_id, String category_name, int category_state) throws Exception {
@@ -52,6 +53,10 @@ public class ProductService {
     public List<ProductEntity> selectProductList() throws Exception{
         return productDao.selectAllProductList();
     }
+    // 상품의 이미지 가져오기
+    public List<ImageEntity> selectProductImgList(Long product_id) throws Exception{
+        return productDao.selectProductImages(product_id);
+    }
     // 상품의 상세 상품 가져오기
     public List<ProductDetailEntity> selectProductDetailList(Long productId) throws Exception{
         List<ProductDetailEntity> productDetail = productDao.selectProductDetailList(productId);
@@ -76,8 +81,6 @@ public class ProductService {
         }
 
         return productDetailEntity;
-
-
     }
     // 모든 상세 상품 가져오기
     public List<ProductDetailEntity> selectAllProductDetailList() throws Exception{
@@ -242,10 +245,6 @@ public class ProductService {
 
         productDao.insertMainPic(product_id, main_pic_path, main_pic_state);
     }
-
-
-
-
 
     // 모두 삭제
     public void deleteProduct(Long product_id) throws Exception{

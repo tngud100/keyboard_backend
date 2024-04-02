@@ -114,8 +114,8 @@ public class SecurityConfig  {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Collections.singletonList("http://3.34.152.132:3000"));
-//                        configuration.setAllowedOrigins(Collections.singletonList("http://127.0.0.1:3000"));
+//                        configuration.setAllowedOrigins(Collections.singletonList("http://3.34.152.132:3000"));
+                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));

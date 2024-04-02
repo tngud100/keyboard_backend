@@ -1,8 +1,10 @@
 package com.example.keyboard.entity.product;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class ProductEntity {
