@@ -1,6 +1,6 @@
 package com.example.keyboard.repository;
 
-import com.example.keyboard.entity.product.ImageEntity;
+import com.example.keyboard.entity.Image.ImageEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 

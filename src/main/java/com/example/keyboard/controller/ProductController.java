@@ -1,8 +1,9 @@
 package com.example.keyboard.controller;
 
+import com.example.keyboard.entity.Image.ImageEntity;
 import com.example.keyboard.entity.product.ProductDetailEntity;
 import com.example.keyboard.entity.product.ProductEntity;
-import com.example.keyboard.entity.product.ProductImageEntity;
+import com.example.keyboard.entity.Image.ProductImageEntity;
 import com.example.keyboard.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,8 +44,9 @@ public class ProductController {
             String name = vo.getName();
             String type = vo.getProduct_type();
 
+            Long product_id = productService.productEnroll(name, type);
+            vo.setProduct_id(product_id);
             imgController.uploadImage(vo);
-            productService.productEnroll(name, type);
             return new ResponseEntity<>("상품 등록 완료", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -52,7 +54,7 @@ public class ProductController {
     }
     @Operation(summary = "상품 카테고리 등록", description = "상품 카테고리 등록(최초 등록은 기본값 설정)")
     @PostMapping("/productcategory/enroll")
-    public ResponseEntity<Object> enrollProductCategory(@RequestParam(value = "product_id") Long product_id, @RequestParam(value = "category_name") String category_name, @RequestParam(value = "category_state") int category_state){
+    public ResponseEntity<Object> enrollProductCategory(@RequestParam(value="product_id") Long product_id, @RequestParam(value="category_name") String category_name, @RequestParam(value="category_state") int category_state){
         try{
             if (productService.isCategoryNameExists(product_id, category_name)) {
                 return ResponseEntity.badRequest().body("이미 존재하는 카테고리입니다.");
@@ -60,6 +62,7 @@ public class ProductController {
             productService.enrollProductCategory(product_id, category_name, category_state);
             return new ResponseEntity<>("상품 카테고리 등록 완료", HttpStatus.OK);
         } catch (Exception e){
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
@@ -168,6 +171,29 @@ public class ProductController {
     public ResponseEntity<Object> selectProductList(){
         try{
             List<ProductEntity> ProductList =  productService.selectProductList();
+            for(ProductEntity product : ProductList){
+                Long product_id = product.getProduct_id();
+                List<ImageEntity> ImageList = productService.selectProductImgList(product_id);
+                for(ImageEntity productImg : ImageList){
+                    String Img_type = productImg.getImg_type();
+                    String Img_path = productImg.getImg_path();
+                    String Img_name = productImg.getImg_name();
+
+                    if(Img_type.equals("represent_picture")){
+                        product.setRepresent_picture(Img_path);
+                        product.setRepresent_picture_name(Img_name);
+                    }else if(Img_type.equals("list_picture")){
+                        product.setList_picture(Img_path);
+                        product.setList_picture_name(Img_name);
+                    }else if(Img_type.equals("list_back_picture")){
+                        product.setList_back_picture(Img_path);
+                        product.setList_back_picture_name(Img_name);
+                    }else if(Img_type.equals("desc_picture")){
+                        product.getDesc_picture().add(Img_path);
+                        product.getDesc_picture_name().add(Img_name);
+                    }
+                }
+            }
             return new ResponseEntity<>(ProductList, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -179,6 +205,26 @@ public class ProductController {
         try{
             List<ProductDetailEntity> ProductDetailList = productService.selectProductDetailList(product_id);
             return new ResponseEntity<>(ProductDetailList, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @Operation(summary = "상품의 카테고리 리스트 GET", description = "상품의 카테고리 가져오기")
+    @GetMapping("/product/{product_id}/category/get")
+    public ResponseEntity<Object> selectProductCategoryList(@PathVariable("product_id") Long product_id){
+        try{
+            List<ProductDetailEntity> ProductCategoryList = productService.selectProductCategoryList(product_id);
+            return new ResponseEntity<>(ProductCategoryList, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @Operation(summary = "상품의 카테고리별 상세상품 리스트 GET", description = "상품의 카테고리별 상세상품 가져오기")
+    @GetMapping("/product/{product_id}/category/{product_category_id}/get")
+    public ResponseEntity<Object> selectProductCategoryDetailList(@PathVariable("product_id") Long product_id, @PathVariable("product_category_id") Long product_category_id){
+        try{
+            List<ProductDetailEntity> ProductCategoryDetailList = productService.selectProductCategoryDetailList(product_id, product_category_id);
+            return new ResponseEntity<>(ProductCategoryDetailList, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

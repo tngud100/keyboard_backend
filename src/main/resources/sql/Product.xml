@@ -26,6 +26,14 @@
     <select id="selectAllProductList" resultType="ProductEntity">
         SELECT * FROM product WHERE isdelete = 0;
     </select>
+    <!--  이름으로 상품 상품 번호 가져오기  -->
+    <select id="selectProductIdByName" resultType="Long">
+        SELECT * FROM product WHERE name = #{name} AND isdelete = 0;
+    </select>
+    <!--  해당 상품에 대한 이미지 리스트 가져오기  -->
+    <select id="selectProductImages" parameterType="Long" resultType="ImageEntity">
+        SELECT * FROM productpicture WHERE product_id = #{product_id};
+    </select>
     <!--  메인으로 등록된 상품 가져오기  -->
     <select id="selectMainProduct" resultType="ProductEntity">
         SELECT * FROM product WHERE main_pic_state = 1 AND isdelete = 0;
@@ -66,15 +74,6 @@
     <select id="selectProductDetailAmount" resultType="int">
         SELECT amount FROM productdetail WHERE product_detail_id = #{product_detail_id} AND isdelete = 0;
     </select>
-
-
-
-
-
-
-
-
-
 
     <!--  상품 수정하기  -->
     <update id="updateProduct">

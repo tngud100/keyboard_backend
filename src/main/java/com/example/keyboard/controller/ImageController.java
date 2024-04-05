@@ -1,8 +1,7 @@
     package com.example.keyboard.controller;
 
-    import com.example.keyboard.entity.product.ImageEntity;
-    import com.example.keyboard.entity.product.ProductImageEntity;
-    import com.example.keyboard.repository.ProductDao;
+    import com.example.keyboard.entity.Image.ImageEntity;
+    import com.example.keyboard.entity.Image.ProductImageEntity;
     import com.example.keyboard.service.ImgUploadService;
     import io.swagger.v3.oas.annotations.Operation;
     import io.swagger.v3.oas.annotations.tags.Tag;

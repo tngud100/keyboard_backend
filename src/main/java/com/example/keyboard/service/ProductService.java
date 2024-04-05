@@ -1,6 +1,6 @@
 package com.example.keyboard.service;
 
-import com.example.keyboard.entity.product.ImageEntity;
+import com.example.keyboard.entity.Image.ImageEntity;
 import com.example.keyboard.entity.product.ProductDetailEntity;
 import com.example.keyboard.entity.product.ProductEntity;
 import com.example.keyboard.repository.ProductDao;
@@ -16,8 +16,9 @@ public class ProductService {
     public final ProductDao productDao;
 
     // 상품 등록
-    public void productEnroll(String name, String type) throws Exception {
+    public Long productEnroll(String name, String type) throws Exception {
         productDao.insertProduct(name, type);
+        return productDao.selectProductIdByName(name);
     }
     // 상품 카테고리 등록
     public void enrollProductCategory(Long product_id, String category_name, int category_state) throws Exception {
@@ -56,6 +57,14 @@ public class ProductService {
     // 상품의 이미지 가져오기
     public List<ImageEntity> selectProductImgList(Long product_id) throws Exception{
         return productDao.selectProductImages(product_id);
+    }
+    // 상품의 카테고리 가져오기
+    public List<ProductDetailEntity> selectProductCategoryList(Long product_id) throws Exception{
+        return productDao.selectCategoryByProductId(product_id);
+    }
+    // 상품의 카테고리별 상세 상품 가져오기
+    public List<ProductDetailEntity> selectProductCategoryDetailList(Long product_id, Long product_category_id) throws Exception{
+        return productDao.selectSameCategoryDetailList(product_id, product_category_id);
     }
     // 상품의 상세 상품 가져오기
     public List<ProductDetailEntity> selectProductDetailList(Long productId) throws Exception{
@@ -260,9 +269,9 @@ public class ProductService {
     // 카테고리를 삭제 할 시에 그에 해당하는 상세 상품의 디폴트 값이 1인 가격을 상품 가격에서 빼준다
     public void deleteProductCategory(Long product_category_id) throws Exception{
         List<ProductDetailEntity> detailList = productDao.selectProductDetailByCategory(product_category_id);
+        productDao.deleteCategory(product_category_id);
 
         for(ProductDetailEntity vo : detailList){
-            productDao.deleteCategory(vo.getProduct_category_id());
             productDao.deleteProductDetail(vo.getProduct_detail_id());
 
             if(vo.getDefault_state() == 1){

@@ -1,6 +1,6 @@
 package com.example.keyboard.service;
 
-import com.example.keyboard.entity.product.ImageEntity;
+import com.example.keyboard.entity.Image.ImageEntity;
 import com.example.keyboard.repository.ImageDao;
 import com.example.keyboard.repository.ProductDao;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +73,7 @@ public class ImgUploadService {
             fileEntity = new ImageEntity();
             fileEntity.setProduct_id(product_id);
             fileEntity.setImg_name(multipartFile.getOriginalFilename());
-            fileEntity.setImg_path(absolutePath + File.separator + new_file_name);
+            fileEntity.setImg_path("/images" + File.separator + new_file_name);
             fileEntity.setImg_size(multipartFile.getSize());
             fileEntity.setImg_type(multipartFile.getName());
 
