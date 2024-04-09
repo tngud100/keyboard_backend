@@ -1,6 +1,8 @@
 package com.example.keyboard.service;
 
 import com.example.keyboard.entity.Image.ImageEntity;
+import com.example.keyboard.entity.Image.ProductImageEntity;
+import com.example.keyboard.entity.product.ProductEntity;
 import com.example.keyboard.repository.ImageDao;
 import com.example.keyboard.repository.ProductDao;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -83,6 +86,60 @@ public class ImgUploadService {
             multipartFile.transferTo(file);
         }
         return fileEntity;
+    }
+
+    public void modifyUpload(ProductImageEntity productImageEntity) throws Exception{
+        Long productId = productImageEntity.getProduct_id();
+        ProductEntity lastProductEntity = productDao.selectProductById(productId);
+        List<ImageEntity> lastImageEntity = productDao.selectProductImages(productId);
+
+        String[] imageField = { "list_picture", "list_back_picture", "represent_picture", "desc_picture"};
+
+        for( ImageEntity imageVO : lastImageEntity){
+            String type = imageVO.getImg_type();
+            String name = imageVO.getImg_name();
+            String path = imageVO.getImg_path();
+            for(String field : imageField){
+                if(type.equals(field)){
+                    lastProductEntity.setFieldValue(type, path);
+                    lastProductEntity.setFieldValue(type+"_name", name);
+                }
+            }
+        }
+        System.out.println("last:"+lastProductEntity);
+        System.out.println("Vo:"+productImageEntity);
+
+        MultipartFile represent_picture =  productImageEntity.getRepresent_picture();
+        MultipartFile list_back_picture =  productImageEntity.getList_back_picture();
+        MultipartFile list_picture =  productImageEntity.getList_picture();
+        List<MultipartFile> desc_picture =  productImageEntity.getDesc_picture();
+
+        if(represent_picture.isEmpty()){
+            System.out.println("안바뀜");
+        }
+
+        if(!lastProductEntity.getRepresent_picture_name().equals(represent_picture.getOriginalFilename())){
+            ImageEntity representUpload = uploadImg(represent_picture, productId);
+            System.out.println("uploadENTITY:"+representUpload);
+        }
+
+
+
+
+
+
+//        for (String field : imageField) {
+//            Object newValue = vo.getFieldValue(field+"_name");
+//            Object oldValue = lastProductEntity.getFieldValue(field+"_name");
+//
+//            if (!newValue.equals(oldValue)) {
+//                modifiedEntity.setFieldValue(field+"_name", newValue);
+//                // 파일 변경되는 로직 추가
+//            } else {
+//                modifiedEntity.setFieldValue(field+"_name", oldValue);
+//                // 예전 파일 기입하는 로직 추가
+//            }
+//        }
     }
 
     public void saveImgPath(ImageEntity imgDao) throws Exception{

@@ -20,11 +20,13 @@
         VALUES (#{product_id}, #{product_category_id}, #{name}, #{amount}, #{stock}, #{default_state})
     </insert>
 
-
-
     <!--  등록한 상품 가져오기  -->
     <select id="selectAllProductList" resultType="ProductEntity">
         SELECT * FROM product WHERE isdelete = 0;
+    </select>
+    <!--  productId로 해당 상품 가져오기  -->
+    <select id="selectProductById" resultType="ProductEntity">
+        SELECT * FROM product WHERE product_id = #{product_id} AND isdelete = 0;
     </select>
     <!--  이름으로 상품 상품 번호 가져오기  -->
     <select id="selectProductIdByName" resultType="Long">
@@ -76,13 +78,10 @@
     </select>
 
     <!--  상품 수정하기  -->
-    <update id="updateProduct">
+    <update id="updateProduct" parameterType="ProductEntity">
         UPDATE product
         SET name = #{name},
-            represent_picture = #{represent_picture},
-            list_picture = #{list_picture},
-            list_back_picture = #{list_back_picture},
-            desc_picture = #{desc_picture}
+            type = #{type}
         WHERE product_id = #{product_id} AND isdelete = 0;
     </update>
 

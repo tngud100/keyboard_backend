@@ -85,7 +85,7 @@ public class ProductController {
     /////////////////////////////////// PUT ///////////////////////////////////
     @Operation(summary = "상품 수정", description = "상품 수정하기")
     @PutMapping("/product/{product_id}/update")
-    public ResponseEntity<Object> updateProduct(ProductEntity vo) {
+    public ResponseEntity<Object> updateProduct(ProductImageEntity vo) {
         try {
             if (!vo.getName().equals(productService.selectProductName(vo.getProduct_id())) &&
                     productService.isProductNameExists(vo.getName())) {
@@ -163,10 +163,8 @@ public class ProductController {
         }
     }
 
-
-
-    /////////////////////////////////// GET ///////////////////////////////////
     @Operation(summary = "상품 리스트 GET")
+    /////////////////////////////////// GET ///////////////////////////////////
     @GetMapping("/product/get")
     public ResponseEntity<Object> selectProductList(){
         try{

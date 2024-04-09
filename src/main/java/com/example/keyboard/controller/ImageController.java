@@ -2,6 +2,8 @@
 
     import com.example.keyboard.entity.Image.ImageEntity;
     import com.example.keyboard.entity.Image.ProductImageEntity;
+    import com.example.keyboard.entity.product.ProductEntity;
+    import com.example.keyboard.repository.ProductDao;
     import com.example.keyboard.service.ImgUploadService;
     import io.swagger.v3.oas.annotations.Operation;
     import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +23,7 @@
 
         private final ImgUploadService imgUploadService;
 
-        public ImageController(ImgUploadService imgUploadService) {
+        public ImageController(ProductDao productDao, ImgUploadService imgUploadService) {
             this.imgUploadService = imgUploadService;
         }
 
@@ -70,4 +72,14 @@
             }
         }
 
+        public ResponseEntity<Object> modifyUploadImg(ProductImageEntity productImageEntity) throws Exception{
+            try{
+                imgUploadService.modifyUpload(productImageEntity);
+                return new ResponseEntity<>("이미지 수정 완료", HttpStatus.OK);
+            }catch(Exception e) {
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        }
     }
+

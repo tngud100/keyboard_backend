@@ -14,3 +14,4 @@ public class ImageEntity {
     private String img_type;
     private Long img_size;
 }
+

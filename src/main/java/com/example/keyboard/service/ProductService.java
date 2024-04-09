@@ -1,6 +1,8 @@
 package com.example.keyboard.service;
 
+import com.example.keyboard.controller.ImageController;
 import com.example.keyboard.entity.Image.ImageEntity;
+import com.example.keyboard.entity.Image.ProductImageEntity;
 import com.example.keyboard.entity.product.ProductDetailEntity;
 import com.example.keyboard.entity.product.ProductEntity;
 import com.example.keyboard.repository.ProductDao;
@@ -14,6 +16,7 @@ import java.util.*;
 public class ProductService {
 
     public final ProductDao productDao;
+    public final ImageController imgController;
 
     // 상품 등록
     public Long productEnroll(String name, String type) throws Exception {
@@ -140,8 +143,28 @@ public class ProductService {
 
 
     // 상품 수정하기
-    public void updateProduct(ProductEntity vo) throws Exception{
-        productDao.updateProduct(vo);
+    public void updateProduct(ProductImageEntity vo) throws Exception {
+        Long productId = vo.getProduct_id();
+
+        ProductEntity modifiedEntity = new ProductEntity();
+
+        ProductEntity lastProductEntity = productDao.selectProductById(productId);
+
+        if (vo.getName().equals(lastProductEntity.getName())) {
+            modifiedEntity.setName(lastProductEntity.getName());
+        } else {
+            modifiedEntity.setName(vo.getName());
+        }
+
+        if (vo.getProduct_type().equals(lastProductEntity.getType())) {
+            modifiedEntity.setType(lastProductEntity.getType());
+        } else {
+            modifiedEntity.setType(vo.getProduct_type());
+        }
+        modifiedEntity.setProduct_id(productId);
+        System.out.println(modifiedEntity);
+        productDao.updateProduct(modifiedEntity);
+        imgController.modifyUploadImg(vo);
     }
     // 상품 카테고리 수정
     public void updateProductCategory(Long product_id, Long product_category_id,
