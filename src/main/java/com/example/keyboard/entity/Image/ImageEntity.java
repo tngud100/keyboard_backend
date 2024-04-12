@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class ImageEntity {
-    private long id;
+    private long img_id;
     private long product_id;
     private String img_name;
     private String img_path;

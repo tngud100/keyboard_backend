@@ -32,14 +32,15 @@
     <select id="selectProductIdByName" resultType="Long">
         SELECT * FROM product WHERE name = #{name} AND isdelete = 0;
     </select>
-    <!--  해당 상품에 대한 이미지 리스트 가져오기  -->
-    <select id="selectProductImages" parameterType="Long" resultType="ImageEntity">
-        SELECT * FROM productpicture WHERE product_id = #{product_id};
-    </select>
     <!--  메인으로 등록된 상품 가져오기  -->
     <select id="selectMainProduct" resultType="ProductEntity">
         SELECT * FROM product WHERE main_pic_state = 1 AND isdelete = 0;
     </select>
+    <!--  해당 상품에 대한 이미지 리스트 가져오기  -->
+    <select id="selectProductImages" parameterType="Long" resultType="ImageEntity">
+        SELECT * FROM productpicture WHERE product_id = #{product_id};
+    </select>
+
     <!--  해당 상품의 상세 상품 가져오기  -->
     <select id="selectProductDetailList" parameterType="Long"  resultType="ProductDetailEntity">
         SELECT * FROM productdetail WHERE product_id = #{product_id} AND isdelete = 0;
@@ -84,6 +85,15 @@
             type = #{type}
         WHERE product_id = #{product_id} AND isdelete = 0;
     </update>
+    <!--  이미지 수정하기  -->
+    <update id="updateProductPicture" parameterType="ImageEntity">
+        UPDATE productpicture
+        SET img_path = #{img_path},
+            img_name = #{img_name},
+            img_size = #{img_size}
+        WHERE img_id = #{img_id};
+    </update>
+
 
     <!--  상품 카테고리 수정하기  -->
     <update id="updateProductCategory">
@@ -164,12 +174,12 @@
     <update id="deleteCategory">
         UPDATE productcategory
         SET isdelete = 1
-        WHERE product_category_id = #{product_category_id}
+        WHERE product_id = #{product_id}
     </update>
     <update id="deleteProductDetail">
         UPDATE productdetail
         SET isdelete = 1
-        WHERE product_detail_id = #{product_detail_id}
+        WHERE product_id = #{product_id}
     </update>
 
 <!--    <delete id="deleteProduct" parameterType="Long">-->

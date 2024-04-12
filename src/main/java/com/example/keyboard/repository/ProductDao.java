@@ -48,13 +48,14 @@ public interface ProductDao {
     public void updateCategoryDefault(@Param("product_category_id")Long product_category_id) throws Exception;
     public void updateProductAmount(@Param("product_id") Long product_id, @Param("amount") int amount) throws Exception;
     public void updateProduct(ProductEntity modifiedEntity) throws Exception;
+    public void updateProductPicture(ImageEntity modifiedImageEntity) throws Exception;
     public void updateProductDetail(ProductDetailEntity productDetailVO) throws Exception;
     public void updateProductCategory(Map<String, Object> categoryInfo) throws Exception;
     public void updateMainPicState(@Param("product_id") Long product_id, @Param("main_pic_state") Integer main_pic_state) throws Exception;
 
 
     public void deleteProduct(@Param("product_id") Long product_id) throws Exception;
-    public void deleteCategory(@Param("product_category_id") Long product_category_id) throws Exception;
-    public void deleteProductDetail(@Param("product_detail_id") Long product_detail_id) throws Exception;
+    public void deleteCategory(@Param("product_id") Long product_id) throws Exception;
+    public void deleteProductDetail(@Param("product_id") Long product_id) throws Exception;
 
 }

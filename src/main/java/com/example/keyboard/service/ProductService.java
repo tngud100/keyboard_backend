@@ -280,13 +280,9 @@ public class ProductService {
 
     // 모두 삭제
     public void deleteProduct(Long product_id) throws Exception{
-        List<ProductDetailEntity> detailList = productDao.selectProductDetailList(product_id);
-
-        for(ProductDetailEntity vo : detailList){
-            productDao.deleteProduct(vo.getProduct_id());
-            productDao.deleteCategory(vo.getProduct_category_id());
-            productDao.deleteProductDetail(vo.getProduct_detail_id());
-        }
+        productDao.deleteProduct(product_id);
+        productDao.deleteCategory(product_id);
+        productDao.deleteProductDetail(product_id);
     }
 
     // 카테고리를 삭제 할 시에 그에 해당하는 상세 상품의 디폴트 값이 1인 가격을 상품 가격에서 빼준다
