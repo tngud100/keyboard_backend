@@ -23,7 +23,7 @@
 
         private final ImgUploadService imgUploadService;
 
-        public ImageController(ProductDao productDao, ImgUploadService imgUploadService) {
+        public ImageController(ImgUploadService imgUploadService) {
             this.imgUploadService = imgUploadService;
         }
 
@@ -58,17 +58,13 @@
         }
 
         @Operation(summary = "이미지 업로드 취소")
-        @DeleteMapping("/cancel")
-        public ResponseEntity<String> cancelUpload(@RequestParam("filePath") String filePath) {
-            File file = new File(filePath);
-            if (file.exists()) {
-                if (file.delete()) {
-                    return ResponseEntity.ok("File upload canceled successfully");
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to cancel file upload");
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found");
+        public ResponseEntity<String> deleteImg(@RequestParam("product_id") Long product_id) throws Exception {
+            try{
+                imgUploadService.deleteImg(product_id);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
             }
         }
 

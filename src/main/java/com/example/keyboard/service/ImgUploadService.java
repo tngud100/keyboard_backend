@@ -8,11 +8,11 @@ import com.example.keyboard.repository.ProductDao;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.parameters.P;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.*;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -182,7 +182,7 @@ public class ImgUploadService {
 
                                     boolean oldImgDeleted = oldImageFile.delete(); // 기존 이미지 파일 삭제
                                     if(oldImgDeleted){
-                                        imageDao.deleteProductPicture(oldImgEntity.getImg_id());
+                                        imageDao.deletePictureByImgId(oldImgEntity.getImg_id());
 
                                     }
                                     System.out.println("desc이미지가 예전 이미지보다 개수가 작은 경우에 예전 이미지의 삭제 여부 : " + oldImgDeleted);
@@ -280,5 +280,28 @@ public class ImgUploadService {
 
     public void saveImgPath(ImageEntity imgDao) throws Exception{
         imageDao.saveProductImage(imgDao);
+    }
+
+    public void deleteImg(Long product_id) throws Exception{
+        List<ImageEntity> ImageListByProductId = imageDao.selectPictureByProductId(product_id);
+
+        String absolutePath = new File("").getAbsolutePath() + "\\" + uploadPath;
+
+        imageDao.deletePictureByProductId(product_id);
+
+        for( ImageEntity imageEntity : ImageListByProductId){
+            String path = imageEntity.getImg_path();
+            String lastImgPath = absolutePath + path.replace("/images", "");
+            File file = new File(lastImgPath);
+            if (file.exists()) {
+                if (file.delete()) {
+                    System.out.println("File delete successfully");
+                } else {
+                    System.out.println("Failed to delete file");
+                }
+            } else {
+                System.out.println("File not found");
+            }
+        }
     }
 }

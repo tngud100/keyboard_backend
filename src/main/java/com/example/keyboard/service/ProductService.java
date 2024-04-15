@@ -177,13 +177,17 @@ public class ProductService {
     }
     // 상세 상품 수정하기
     public void updateProductDetail(ProductDetailEntity vo) throws Exception{
-        int amount = vo.getAmount();
-        int origin_amount = productDao.selectProductDetailAmount(vo.getProduct_detail_id());
-        if(amount != origin_amount){
-            productDao.updateProductAmount(vo.getProduct_id(), -origin_amount);
-            productDao.updateProductAmount(vo.getProduct_id(), amount);
-        }
+        ProductDetailEntity productEntity = productDao.selectProductDetail(vo.getProduct_detail_id());
+        int defaultState = productEntity.getDefault_state();
 
+        int amount = vo.getAmount();
+
+        int origin_amount = productDao.selectProductDetailAmount(vo.getProduct_detail_id());
+
+        if(amount != origin_amount && defaultState == 1){
+            productDao.updateProductAmount(productEntity.getProduct_id(), -origin_amount);
+            productDao.updateProductAmount(productEntity.getProduct_id(), amount);
+        }
         productDao.updateProductDetail(vo);
     }
 
@@ -218,14 +222,18 @@ public class ProductService {
         for (ProductDetailEntity vo : detailList) {
             if (vo.getDefault_state() == 1) {
                 productDao.updateProductDefault(vo.getProduct_detail_id());
-                productDao.updateProductAmount(vo.getProduct_id(), -vo.getAmount());
+                if(vo.getCategory_state() == 1){
+                    productDao.updateProductAmount(vo.getProduct_id(), -vo.getAmount());
+                }
                 break;
             }
         }
 
         if(!hasDefaultDetail){
             productDao.updateProductDefault(detailVO.getProduct_detail_id());
-            productDao.updateProductAmount(detailVO.getProduct_id(), detailVO.getAmount());
+            if(detailVO.getCategory_state() == 1){
+                productDao.updateProductAmount(detailVO.getProduct_id(), detailVO.getAmount());
+            }
         }
 
     }
@@ -241,6 +249,7 @@ public class ProductService {
             boolean isDefaultState = true;
             for (ProductDetailEntity detailVO : detailList) {
                 if(detailVO.getDefault_state() == 1){
+                    productDao.updateProductAmount(detailVO.getProduct_id(), detailVO.getAmount());
                     isDefaultState = false;
                     break;
                 }
@@ -258,6 +267,10 @@ public class ProductService {
             for (ProductDetailEntity vo : categoryList) {
                 int state = vo.getCategory_state();
                 if (!vo.getProduct_category_id().equals(product_category_id) && state == 1) {
+                    ProductDetailEntity detailVO = productDao.selectDefaultedDetailByCategoryId(product_category_id);
+                    int amount = detailVO.getAmount();
+                    productDao.updateProductAmount(detailVO.getProduct_id(), - amount);
+
                     isCheckCategoryState = false;
                     break;
                 }
@@ -283,6 +296,7 @@ public class ProductService {
         productDao.deleteProduct(product_id);
         productDao.deleteCategory(product_id);
         productDao.deleteProductDetail(product_id);
+        imgController.deleteImg(product_id);
     }
 
     // 카테고리를 삭제 할 시에 그에 해당하는 상세 상품의 디폴트 값이 1인 가격을 상품 가격에서 빼준다

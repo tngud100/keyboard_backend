@@ -37,6 +37,7 @@ public interface ProductDao {
     public String selectProductName(@Param("product_id") Long product_id) throws Exception;
     public String selectProductDetailName(@Param("product_detail_id") Long product_detail_id) throws Exception;
     public int selectProductDetailAmount(@Param("product_detail_id") Long product_detail_id) throws Exception;
+    public ProductDetailEntity selectDefaultedDetailByCategoryId(@Param("product_category_id") Long product_category_id) throws Exception;
 
 
     public int isProductNameExists(@Param("name") String name) throws Exception;
