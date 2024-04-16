@@ -275,9 +275,9 @@ public class ProductController {
     // 2. 상품 카테고리 삭제
     @Operation(summary = "상품 카테고리 삭제", description = "해당 카테고리 삭제하기(해당 카테고리에 관련된 상세상품도 같이 삭제)")
     @DeleteMapping("/productCategory/{product_category_id}/delete")
-    public ResponseEntity<Object> deleteProductCategory(@PathVariable("product_category_id") Long product_category_id){
+    public ResponseEntity<Object> deleteProductCategory(@PathVariable("product_category_id") Long product_category_id, @RequestParam("product_id") Long product_id){
         try{
-            productService.deleteProductCategory(product_category_id);
+            productService.deleteProductCategory(product_category_id, product_id);
             return new ResponseEntity<>(product_category_id + "번 카테고리, 이에 해당하는 상세상품 모두 삭제", HttpStatus.OK);
         } catch (Exception e){
             System.out.println(e.getMessage());

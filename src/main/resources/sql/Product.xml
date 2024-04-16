@@ -68,7 +68,6 @@
     <!--  상품과 카테고리가 같은 상세 상품 리스트 가져오기  -->
     <select id="selectSameCategoryDetailList" resultType="ProductDetailEntity">
         SELECT * FROM productdetail WHERE product_id = #{product_id} AND product_category_id = #{product_category_id} AND isdelete = 0;
-        cardItem.value = null;
     </select>
     <!--  해당 상품 카테고리의 category_state 가져오기  -->
     <select id="selectDetailCategoryState" resultType="int">
@@ -172,24 +171,25 @@
         SET isdelete = 1
         WHERE product_id = #{product_id}
     </update>
-    <update id="deleteCategory">
+    <update id="deleteCategoryByProductId">
         UPDATE productcategory
         SET isdelete = 1
         WHERE product_id = #{product_id}
     </update>
-    <update id="deleteProductDetail">
+    <update id="deleteProductDetailByProductId">
         UPDATE productdetail
         SET isdelete = 1
         WHERE product_id = #{product_id}
     </update>
 
-<!--    <delete id="deleteProduct" parameterType="Long">-->
-<!--        DELETE from product where product_id = #{product_id}-->
-<!--    </delete>-->
-<!--    <delete id="deleteCategory" parameterType="Long">-->
-<!--        DELETE from productcategory where product_category_id = #{product_category_id}-->
-<!--    </delete>-->
-<!--    <delete id="deleteProductDetail" parameterType="Long">-->
-<!--        DELETE from productdetail where product_detail_id = #{product_detail_id}-->
-<!--    </delete>-->
+    <update id="deleteCategory" parameterType="Long">
+        UPDATE productcategory
+        SET isdelete = 1
+        WHERE product_category_id = #{product_category_id}
+    </update>
+    <update id="deleteProductDetail" parameterType="Long">
+        UPDATE productdetail
+        SET isdelete = 1
+        WHERE product_detail_id = #{product_detail_id}
+    </update>
 </mapper>

@@ -222,7 +222,7 @@ public class ProductService {
         for (ProductDetailEntity vo : detailList) {
             if (vo.getDefault_state() == 1) {
                 productDao.updateProductDefault(vo.getProduct_detail_id());
-                if(vo.getCategory_state() == 1){
+                if(category_state == 1){
                     productDao.updateProductAmount(vo.getProduct_id(), -vo.getAmount());
                 }
                 break;
@@ -231,7 +231,7 @@ public class ProductService {
 
         if(!hasDefaultDetail){
             productDao.updateProductDefault(detailVO.getProduct_detail_id());
-            if(detailVO.getCategory_state() == 1){
+            if(category_state == 1){
                 productDao.updateProductAmount(detailVO.getProduct_id(), detailVO.getAmount());
             }
         }
@@ -294,23 +294,36 @@ public class ProductService {
     // 모두 삭제
     public void deleteProduct(Long product_id) throws Exception{
         productDao.deleteProduct(product_id);
-        productDao.deleteCategory(product_id);
-        productDao.deleteProductDetail(product_id);
+        productDao.deleteCategoryByProductId(product_id);
+        productDao.deleteProductDetailByProductId(product_id);
         imgController.deleteImg(product_id);
     }
 
     // 카테고리를 삭제 할 시에 그에 해당하는 상세 상품의 디폴트 값이 1인 가격을 상품 가격에서 빼준다
-    public void deleteProductCategory(Long product_category_id) throws Exception{
+    // 카테고리 삭제 시에 해당 상품의 카테고리에 기본값을 가진 다른 카테고리가 있어야지 삭제가 가능하다
+    public void deleteProductCategory(Long product_category_id, Long product_id) throws Exception{
         List<ProductDetailEntity> detailList = productDao.selectProductDetailByCategory(product_category_id);
-        productDao.deleteCategory(product_category_id);
+        List<ProductDetailEntity> categoryList = productDao.selectCategoryByProductId(product_id);
+
+        boolean flag = false;
+        for(ProductDetailEntity categoryVO : categoryList){
+            if(categoryVO.getCategory_state() == 1 && !categoryVO.getProduct_category_id().equals(product_category_id)){
+                flag = true;
+            }
+        }
+
+        if(!flag){
+            throw new Exception("다른 카테고리에 기본값을 설정해 주세요. 상품의 기본값이 설정된 유일한 카테고리는 삭제 할 수 없습니다.");
+        }
 
         for(ProductDetailEntity vo : detailList){
             productDao.deleteProductDetail(vo.getProduct_detail_id());
-
             if(vo.getDefault_state() == 1){
-                productDao.updateProductAmount(vo.getProduct_id(), -vo.getAmount());
+                productDao.updateProductAmount(vo.getProduct_id(), - vo.getAmount());
             }
         }
+        productDao.deleteCategory(product_category_id);
+
     }
 
     // 카테고리가 1이고 기본 값이 1일때 상세 상품은 삭제 할 수 없다
