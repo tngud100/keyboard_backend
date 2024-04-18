@@ -56,8 +56,17 @@
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
             }
         }
-
-        @Operation(summary = "이미지 업로드 취소")
+        public ResponseEntity<Object> uploadMainImg(MultipartFile mainImg, @RequestParam("product_id") Long product_id) throws Exception{
+            try {
+                ImageEntity imgEntity = imgUploadService.uploadImg(mainImg, product_id);
+                imgUploadService.saveImgPath(imgEntity);
+                return new ResponseEntity<>("이미지 업로드 완료", HttpStatus.OK);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(e.getMessage(),  HttpStatus.BAD_REQUEST);
+            }
+        }
+        @Operation(summary = "이미지 삭제")
         public ResponseEntity<String> deleteImg(@RequestParam("product_id") Long product_id) throws Exception {
             try{
                 imgUploadService.deleteImg(product_id);
@@ -67,6 +76,17 @@
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
             }
         }
+        @Operation(summary = "메인 이미지 화보 삭제")
+        public ResponseEntity<String> deleteMainImg(@RequestParam("product_id") Long product_id) throws Exception {
+            try{
+                imgUploadService.deleteMainImg(product_id);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        }
+
 
         public ResponseEntity<Object> modifyUploadImg(ProductImageEntity productImageEntity) throws Exception{
             try{

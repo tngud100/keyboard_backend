@@ -8,6 +8,9 @@
         INSERT INTO productpicture(product_id, img_path, img_name, img_size, img_type)
         VALUES (#{product_id}, #{img_path}, #{img_name}, #{img_size}, #{img_type})
     </insert>
+    <select id="selectMainPictureByProductId" parameterType="Long" resultType="ImageEntity">
+        SELECT * FROM productpicture where product_id = #{product_id} AND img_type = 'main_picture'
+    </select>
     <select id="selectPictureByProductId" parameterType="Long" resultType="ImageEntity">
         SELECT * FROM productpicture where product_id = #{product_id}
     </select>
@@ -16,5 +19,8 @@
     </delete>
     <delete id="deletePictureByProductId" parameterType="Long">
         DELETE from productpicture where product_id = #{product_id}
+    </delete>
+    <delete id="deleteMainPictureByProductId" parameterType="Long">
+        DELETE from productpicture where product_id = #{product_id} AND img_type = 'main_picture'
     </delete>
 </mapper>

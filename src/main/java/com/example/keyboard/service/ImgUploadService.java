@@ -279,6 +279,10 @@ public class ImgUploadService {
     }
 
     public void saveImgPath(ImageEntity imgDao) throws Exception{
+        List<ImageEntity> ImageListByProductId = imageDao.selectMainPictureByProductId(imgDao.getProduct_id());
+        if(ImageListByProductId.size() > 1){
+            imageDao.deleteMainPictureByProductId(imgDao.getProduct_id());
+        }
         imageDao.saveProductImage(imgDao);
     }
 
@@ -301,6 +305,32 @@ public class ImgUploadService {
                 }
             } else {
                 System.out.println("File not found");
+            }
+        }
+    }
+    public void deleteMainImg(Long product_id) throws Exception{
+        List<ImageEntity> ImageListByProductId = imageDao.selectPictureByProductId(product_id);
+
+        String absolutePath = new File("").getAbsolutePath() + "\\" + uploadPath;
+
+        imageDao.deleteMainPictureByProductId(product_id);
+        productDao.setMainProduct(product_id);
+
+        for( ImageEntity imageEntity : ImageListByProductId){
+            String imageEntityType = imageEntity.getImg_type();
+            if(imageEntityType.equals("main_picture")){
+                String path = imageEntity.getImg_path();
+                String lastImgPath = absolutePath + path.replace("/images", "");
+                File file = new File(lastImgPath);
+                if (file.exists()) {
+                    if (file.delete()) {
+                        System.out.println("File delete successfully");
+                    } else {
+                        System.out.println("Failed to delete file");
+                    }
+                } else {
+                    System.out.println("File not found");
+                }
             }
         }
     }

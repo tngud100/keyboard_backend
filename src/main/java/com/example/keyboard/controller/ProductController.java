@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -133,10 +134,28 @@ public class ProductController {
     }
     @Operation(summary = "메인 페이지 상품 설정", description = "상품 리스트를 메인으로 설정하는 버튼")
     @PutMapping("/product/setMain")
-    public ResponseEntity<Object> setMainProduct(ProductEntity vo){
+    public ResponseEntity<Object> setMainProduct(@RequestParam(value = "product_id") Long product_id){
         try{
-            productService.setMainProduct(vo);
+            productService.setMainProduct(product_id);
             return new ResponseEntity<>("메인상품 설정 완료", HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>("시스템 오류. 개발자에게 문의 하세요", HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PutMapping("/product/insertMainPicture")
+    public ResponseEntity<Object> inserMainPic(@RequestParam(value="main_picture") MultipartFile mainImg, @RequestParam("product_id") Long product_id){
+        try{
+            imgController.uploadMainImg(mainImg, product_id);
+            return new ResponseEntity<>("메인상품사진 등록 완료", HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>("시스템 오류. 개발자에게 문의 하세요", HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PutMapping("/product/resetMainPicture")
+    public ResponseEntity<Object> deleteMainImg(@RequestParam(value="product_id") Long product_id){
+        try{
+            imgController.deleteMainImg(product_id);
+            return new ResponseEntity<>("메인상품 사진 삭제 완료", HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>("시스템 오류. 개발자에게 문의 하세요", HttpStatus.BAD_REQUEST);
         }
@@ -242,6 +261,7 @@ public class ProductController {
     public ResponseEntity<Object> selectMainProductList(){
         try{
             List<ProductEntity> vo = productService.selectMainProductList();
+            System.out.println(vo);
             return new ResponseEntity<>(vo, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

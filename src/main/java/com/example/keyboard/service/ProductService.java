@@ -8,6 +8,7 @@ import com.example.keyboard.entity.product.ProductEntity;
 import com.example.keyboard.repository.ProductDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -114,7 +115,21 @@ public class ProductService {
     }
     // main_pic_state가 1인 상품 가져오기
     public List<ProductEntity> selectMainProductList() throws Exception{
-        return productDao.selectMainProduct();
+        List<ProductEntity> ProductEntities = productDao.selectMainProduct();
+        for(ProductEntity VO :  ProductEntities){
+            List<ImageEntity> ImgVO = productDao.selectProductImages(VO.getProduct_id());
+            for(ImageEntity img : ImgVO){
+                if(img.getImg_type().equals("main_picture")){
+                    String name = img.getImg_name();
+                    String path = img.getImg_path();
+                    VO.setMain_picture(path);
+                    VO.setMain_picture_name(name);
+                }
+            }
+        }
+
+
+        return ProductEntities;
     }
     // 이름 존재 여부 확인하기
     public boolean isProductNameExists(String name) throws Exception{
@@ -283,12 +298,8 @@ public class ProductService {
         }
         productDao.updateCategoryDefault(product_category_id);
     }
-    public void setMainProduct(ProductEntity vo) throws Exception{
-        String main_pic_path = vo.getMain_picture();
-        Integer main_pic_state = vo.getMain_pic_state();
-        Long product_id = vo.getProduct_id();
-
-        productDao.insertMainPic(product_id, main_pic_path, main_pic_state);
+    public void setMainProduct(Long product_id) throws Exception{
+        productDao.setMainProduct(product_id);
     }
 
     // 모두 삭제

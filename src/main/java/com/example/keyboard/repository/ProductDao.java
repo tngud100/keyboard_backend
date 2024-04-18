@@ -17,7 +17,6 @@ public interface ProductDao {
     public void insertProduct(@Param("name") String name, @Param("type") String type) throws Exception;
     public void insertProductDetail(ProductDetailEntity productDetailVO) throws Exception;
     public void insertProductCategory(Map<String, Object> categoryInfo) throws Exception;
-    public void insertMainPic(@Param("product_id") Long product_id, @Param("main_pic_path") String main_pic_path, @Param("main_pic_state") Integer main_pic_state) throws Exception;
 
     public List<ProductEntity> selectAllProductList() throws Exception;
     public Long selectProductIdByName(@Param("name") String name) throws Exception;
@@ -52,7 +51,7 @@ public interface ProductDao {
     public void updateProductPicture(ImageEntity modifiedImageEntity) throws Exception;
     public void updateProductDetail(ProductDetailEntity productDetailVO) throws Exception;
     public void updateProductCategory(Map<String, Object> categoryInfo) throws Exception;
-    public void updateMainPicState(@Param("product_id") Long product_id, @Param("main_pic_state") Integer main_pic_state) throws Exception;
+    public void setMainProduct(@Param("product_id") Long product_id) throws Exception;
 
 
     public void deleteProduct(@Param("product_id") Long product_id) throws Exception;

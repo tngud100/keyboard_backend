@@ -135,9 +135,9 @@
         WHERE product_category_id = #{product_category_id} AND isdelete = 0;
     </update>
     <!--  상품 메인 사진 STATE, IMG 세팅  -->
-    <update id="insertMainPic">
+    <update id="setMainProduct">
         UPDATE product
-        SET main_picture = #{main_pic_path}, main_pic_state = #{main_pic_state}
+        SET main_pic_state = IF(main_pic_state = 0, 1, 0)
         WHERE product_id = #{product_id} AND isdelete = 0;
     </update>
 
