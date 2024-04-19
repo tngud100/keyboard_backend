@@ -22,15 +22,15 @@
 
     <!--  등록한 상품 가져오기  -->
     <select id="selectAllProductList" resultType="ProductEntity">
-        SELECT * FROM product WHERE isdelete = 0;
+        SELECT * FROM product WHERE isdelete = 0 ORDER BY product_id ASC;
     </select>
     <!--  productId로 해당 상품 가져오기  -->
     <select id="selectProductById" resultType="ProductEntity">
-        SELECT * FROM product WHERE product_id = #{product_id} AND isdelete = 0;
+        SELECT * FROM product WHERE product_id = #{product_id} AND isdelete = 0 ORDER BY product_id ASC;
     </select>
     <!--  이름으로 상품 상품 번호 가져오기  -->
     <select id="selectProductIdByName" resultType="Long">
-        SELECT * FROM product WHERE name = #{name} AND isdelete = 0;
+        SELECT * FROM product WHERE name = #{name} AND isdelete = 0 ORDER BY product_id ASC;
     </select>
     <!--  메인으로 등록된 상품 가져오기  -->
     <select id="selectMainProduct" resultType="ProductEntity">
