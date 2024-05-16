@@ -15,7 +15,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "상품관련 API", description = "상품 CRUD API")
 @Controller
@@ -142,6 +144,7 @@ public class ProductController {
             return new ResponseEntity<>("시스템 오류. 개발자에게 문의 하세요", HttpStatus.BAD_REQUEST);
         }
     }
+    @Operation(summary = "상품의 메인상품의 이미지 등록", description = "상품의 메인상품으로 설정된 이미지 설정")
     @PutMapping("/product/insertMainPicture")
     public ResponseEntity<Object> inserMainPic(@RequestParam(value="main_picture") MultipartFile mainImg, @RequestParam("product_id") Long product_id){
         try{
@@ -151,6 +154,7 @@ public class ProductController {
             return new ResponseEntity<>("시스템 오류. 개발자에게 문의 하세요", HttpStatus.BAD_REQUEST);
         }
     }
+    @Operation(summary = "상품의 메인상품의 이미지 삭제 완료", description = "상품의 메인상품으로 설정된 이미지 삭제")
     @PutMapping("/product/resetMainPicture")
     public ResponseEntity<Object> deleteMainImg(@RequestParam(value="product_id") Long product_id){
         try{
@@ -221,7 +225,13 @@ public class ProductController {
     public ResponseEntity<Object> selectProductDetailList(@PathVariable("product_id") Long product_id){
         try{
             List<ProductDetailEntity> ProductDetailList = productService.selectProductDetailList(product_id);
-            return new ResponseEntity<>(ProductDetailList, HttpStatus.OK);
+            ProductEntity product = productService.selectProduct(product_id);
+
+            Map<Object, Object> productData = new HashMap<>();
+            productData.put("productDetailList", ProductDetailList);
+            productData.put("productVO", product);
+
+            return new ResponseEntity<>(productData, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -318,7 +328,4 @@ public class ProductController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
-
-
 }

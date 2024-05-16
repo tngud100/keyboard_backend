@@ -58,6 +58,31 @@ public class ProductService {
     public List<ProductEntity> selectProductList() throws Exception{
         return productDao.selectAllProductList();
     }
+    public ProductEntity selectProduct(Long product_id) throws Exception{
+        ProductEntity product = productDao.selectProductById(product_id);
+        List<ImageEntity> ImageList = selectProductImgList(product_id);
+
+        for(ImageEntity productImg : ImageList){
+            String Img_type = productImg.getImg_type();
+            String Img_path = productImg.getImg_path();
+            String Img_name = productImg.getImg_name();
+
+            if(Img_type.equals("represent_picture")){
+                product.setRepresent_picture(Img_path);
+                product.setRepresent_picture_name(Img_name);
+            }else if(Img_type.equals("list_picture")){
+                product.setList_picture(Img_path);
+                product.setList_picture_name(Img_name);
+            }else if(Img_type.equals("list_back_picture")){
+                product.setList_back_picture(Img_path);
+                product.setList_back_picture_name(Img_name);
+            }else if(Img_type.equals("desc_picture")){
+                product.getDesc_picture().add(Img_path);
+                product.getDesc_picture_name().add(Img_name);
+            }
+        }
+        return product;
+    }
     // 상품의 이미지 가져오기
     public List<ImageEntity> selectProductImgList(Long product_id) throws Exception{
         return productDao.selectProductImages(product_id);

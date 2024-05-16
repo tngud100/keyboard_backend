@@ -93,14 +93,6 @@ public class SecurityConfig  {
 //                        .requestMatchers("/api/list/get").permitAll()
 //                        .anyRequest().authenticated());
 
-        //                .authorizeHttpRequests((auth) -> auth
-//                        .requestMatchers("/").anonymous()
-//                        .requestMatchers("/error").anonymous()
-//                        .requestMatchers("/api/login").permitAll()
-//                        .requestMatchers("/api/health").permitAll()
-//                        .requestMatchers("/health").permitAll()
-//                        .requestMatchers("/**").permitAll()
-//                        .requestMatchers("/login").permitAll()
 
 
         http
@@ -122,6 +114,7 @@ public class SecurityConfig  {
                         configuration.setMaxAge(3600L);
 
                         configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+                        configuration.addExposedHeader("Refresh-Token");
 
                         return configuration;
                     }

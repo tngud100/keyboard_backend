@@ -91,6 +91,31 @@ public class ImgUploadService {
         return fileEntity;
     }
 
+    public void modifyUpload(ProductImageEntity productImageEntity) throws Exception{
+
+        Long productId = productImageEntity.getProduct_id();
+        ProductEntity lastProductEntity = productDao.selectProductById(productId);
+        List<ImageEntity> lastImageEntity = productDao.selectProductImages(productId);
+
+        String[] imageField = { "list_picture", "list_back_picture", "represent_picture", "desc_picture"};
+
+        for( ImageEntity imageVO : lastImageEntity){
+            String type = imageVO.getImg_type();
+            String name = imageVO.getImg_name();
+            String path = imageVO.getImg_path();
+            for(String field : imageField){
+                if(type.equals(field)){
+                    lastProductEntity.setFieldValue(type, path);
+                    lastProductEntity.setFieldValue(type+"_name", name);
+                }
+            }
+        }
+        ImageEntity newProductImageEntity = modifyImg(productImageEntity, lastImageEntity);
+        System.out.println("last:"+lastProductEntity);
+        System.out.println("now:"+productImageEntity);
+        System.out.println("new:"+newProductImageEntity);
+    }
+
     public ImageEntity modifyImg(ProductImageEntity productImageVO, List<ImageEntity> lastImageEntity) throws Exception {
         ImageEntity newImageEntity = new ImageEntity();
 
@@ -128,33 +153,8 @@ public class ImgUploadService {
         return newImageEntity;
     }
 
-    public void modifyUpload(ProductImageEntity productImageEntity) throws Exception{
-
-        Long productId = productImageEntity.getProduct_id();
-        ProductEntity lastProductEntity = productDao.selectProductById(productId);
-        List<ImageEntity> lastImageEntity = productDao.selectProductImages(productId);
-
-        String[] imageField = { "list_picture", "list_back_picture", "represent_picture", "desc_picture"};
-
-        for( ImageEntity imageVO : lastImageEntity){
-            String type = imageVO.getImg_type();
-            String name = imageVO.getImg_name();
-            String path = imageVO.getImg_path();
-            for(String field : imageField){
-                if(type.equals(field)){
-                    lastProductEntity.setFieldValue(type, path);
-                    lastProductEntity.setFieldValue(type+"_name", name);
-                }
-            }
-        }
-        ImageEntity newProductImageEntity = modifyImg(productImageEntity, lastImageEntity);
-        System.out.println("last:"+lastProductEntity);
-        System.out.println("now:"+productImageEntity);
-        System.out.println("new:"+newProductImageEntity);
-    }
 
     private void processDescPicture(MultipartFile descPicture, List<ImageEntity> lastImageEntity, String absolutePath, ImageEntity newImageEntity, int descListSize, int descIndex) throws Exception {
-        int lastImageListIndex = 0;
         boolean addImgState = false;
         if (descPicture != null && !descPicture.isEmpty()) {
             for (ImageEntity imgEntity : lastImageEntity) {
@@ -171,31 +171,26 @@ public class ImgUploadService {
 
                     boolean deleted = previousImageFile.delete(); // 기존 이미지 파일 삭제
                     System.out.println("이전 이미지 삭제 여부: " + deleted);
-                    System.out.println("이미지Index: " + lastImageListIndex);
+                    System.out.println("이미지Index: " + descIndex);
 
                     if(deleted){
-                        if(descIndex == descListSize - 1 && descListSize < lastImageEntity.size()) {
-                            for (ImageEntity oldImgEntity : lastImageEntity) {
-                                if (oldImgEntity.getImg_type().equals("desc_picture")) {
-                                    String oldImgPath = absolutePath + oldImgEntity.getImg_path().replace("/images", "");
-                                    File oldImageFile = new File(oldImgPath);
+                        for (ImageEntity oldImgEntity : lastImageEntity) {
+                            if (oldImgEntity.getImg_type().equals("desc_picture")) {
+                                String oldImgPath = absolutePath + oldImgEntity.getImg_path().replace("/images", "");
+                                File oldImageFile = new File(oldImgPath);
 
-                                    boolean oldImgDeleted = oldImageFile.delete(); // 기존 이미지 파일 삭제
-                                    if(oldImgDeleted){
-                                        imageDao.deletePictureByImgId(oldImgEntity.getImg_id());
+                                boolean oldImgDeleted = oldImageFile.delete(); // 기존 이미지 파일 삭제
+                                if(oldImgDeleted){
+                                    imageDao.deletePictureByImgId(oldImgEntity.getImg_id());
 
-                                    }
-                                    System.out.println("desc이미지가 예전 이미지보다 개수가 작은 경우에 예전 이미지의 삭제 여부 : " + oldImgDeleted);
                                 }
+                                System.out.println("desc이미지가 예전 이미지보다 개수가 작은 경우에 예전 이미지의 삭제 여부 : " + oldImgDeleted);
                             }
                         }
                         break;
                     }
-                    if(lastImageListIndex == lastImageEntity.size() - 1 ){
-                        addImgState = true;
-                    }
+                    addImgState = true;
                 }
-                lastImageListIndex++;
             }
 
             String contentType = descPicture.getContentType();
@@ -262,7 +257,7 @@ public class ImgUploadService {
                 } else if (contentType.contains("image/gif")) {
                     originalFileExtension = ".gif";
                 }
-                // 다른 파일 명이면 아무 일 하지 않는다
+                // 다른 파일 명이면 아무 일 하지 않는다eeee
                 else {
                     throw new Exception("jpg, png, gif만 업로드 가능합니다.");
                 }
@@ -282,6 +277,8 @@ public class ImgUploadService {
         List<ImageEntity> ImageListByProductId = imageDao.selectMainPictureByProductId(imgDao.getProduct_id());
         if(ImageListByProductId.size() > 1){
             imageDao.deleteMainPictureByProductId(imgDao.getProduct_id());
+
+
         }
         imageDao.saveProductImage(imgDao);
     }
