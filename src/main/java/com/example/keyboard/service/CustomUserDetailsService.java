@@ -13,7 +13,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final AuthDao authDao;
 
     public CustomUserDetailsService(AuthDao authDao) {
-
         this.authDao = authDao;
     }
 
@@ -25,7 +24,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         //DB에서 조회
         MemberEntity userData = new MemberEntity();
         try {
-            System.out.println(userId+"아이디를 찾습니다");
             userData = authDao.findByLoginId(userId);
             if (userData != null) {
                 //UserDetails에 담아서 return하면 AutneticationManager가 검증 함

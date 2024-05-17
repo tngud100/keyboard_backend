@@ -1,96 +1,60 @@
 package com.example.keyboard.controller;
 
-import com.example.keyboard.entity.member.MemberEntity;
+import com.example.keyboard.config.JWT.JWTUtil;
+import com.example.keyboard.config.Redis.RedisUtils;
+import com.example.keyboard.entity.Auth.LoginRequest;
 import com.example.keyboard.service.AuthService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import org.springframework.web.bind.annotation.PostMapping;
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-
-
-@Tag(name = "유저관련 API", description = "회원가입/로그인, 휴대폰 번호 인증 등")
-@Controller
-@RequiredArgsConstructor
+@RestController
 @RequestMapping("/api")
 public class AuthController {
-
-    private final AuthService userService;
-
-    @Operation(summary = "회원가입")
-    @PostMapping("/join")
-    public ResponseEntity<Object> join(MemberEntity vo){
-        try {
-            String result = userService.join(vo);
-
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-    @Operation(summary = "로그아웃")
-    @PostMapping("/logout")
-    public ResponseEntity<Object> logout(HttpServletRequest Request){
-        try {
-            String AccessToken = Request.getHeader("Authorization");
-            String RefreshToken = Request.getHeader("Refresh-Token");
-            String AccessTokenExceptBeerer = AccessToken.split(" ")[1];
-            userService.logout(AccessTokenExceptBeerer, RefreshToken);
-            System.out.println("로그아웃 완료");
-            return new ResponseEntity<>(HttpStatus.OK);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    private final JWTUtil jwtUtil;
+    private final AuthService authService;
+    @Autowired
+    public AuthController(JWTUtil jwtUtil, AuthService authService) {
+        this.jwtUtil = jwtUtil;
+        this.authService = authService;
     }
 
-    @Operation(summary = "휴대폰 인증번호 전송")
-    @PostMapping("/send")
-    public ResponseEntity<Object> sendVerifyNum(@RequestParam(value="phoneNum") String phoneNum){
+    @GetMapping("/auth/validateToken")
+    public ResponseEntity<String> validateToken(HttpServletRequest request) throws Exception {
+        String authorization= request.getHeader("Authorization");
+        String refreshToken= request.getHeader("Refresh-Token");
+
+        if (authorization == null || refreshToken == null) {
+            return new ResponseEntity<>("인증 정보가 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
+        }
+
+        String accessToken = authorization.split(" ")[1];
         try {
-            if(phoneNum.contains("-")){
-                return new ResponseEntity<>("하이폰 제거 후 번호 다시 입력", HttpStatus.OK);
+            boolean isBlackList = authService.checkBlackList(accessToken);
+            if(isBlackList){
+               return new ResponseEntity<>("이미 로그아웃된 토큰입니다.", HttpStatus.UNAUTHORIZED);
             }
-            userService.sendVerifyNum(phoneNum);
-            return new ResponseEntity<>("인증번호 발송 완료", HttpStatus.OK);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-    @Operation(summary = "휴대폰 인증번호 확인")
-    @GetMapping("/verify")
-    public ResponseEntity<Object> checkVerifyNum(@RequestParam(value="phoneNum") String phoneNum, @RequestParam(value="verifyNum") String varifyNum){
-        try {
-            boolean check = userService.checkVerifyNum(phoneNum, varifyNum);
-            return new ResponseEntity<>(check, HttpStatus.OK);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
 
-    @Operation(summary = "유저 권한 테스트 개발용")
-    @GetMapping("/check")
-    public ResponseEntity<Object> check(HttpServletRequest Request) {
-        try {
-            String AccessToken = Request.getHeader("Authorization");
-            System.out.println("왜 들어와지냐");
-            Map<String, String> check = userService.check(AccessToken);
+            boolean isAccessTokenExpired = authService.isExpiredAccessToken(accessToken); // access토큰 유효성 검사
+            if(!isAccessTokenExpired){ // access토큰 만료 후 refresh토큰을 통해 access토큰 재발급
+              accessToken = authService.newAccessTokenByRefreshToken(refreshToken);
+            }
 
-            return new ResponseEntity<>(check, HttpStatus.OK);
+            authService.setSecurityAuthenticationToken(accessToken); // 스프링 시큐리티에 사용자 등록
+
+            String user_role = jwtUtil.getRole(accessToken);
+
+            return new ResponseEntity<>(user_role, HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(),  HttpStatus.UNAUTHORIZED);
         }
+
     }
 }
