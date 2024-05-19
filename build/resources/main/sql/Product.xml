@@ -5,54 +5,191 @@
 
 <mapper namespace="com.example.keyboard.repository.ProductDao">
     <!--  상품 등록  -->
-    <insert id="insertListProduct" parameterType="ProductEntity">
-        INSERT INTO product(name, represent_picture, list_picture, LIST_BACK_PICTURE, DESC_PICTURE)
-        VALUES(#{name}, #{represent_picture}, #{list_picture}, #{list_back_picture}, #{desc_picture})
+    <insert id="insertProduct">
+        INSERT INTO product(name, type)
+        VALUES(#{name}, #{type})
+    </insert>
+    <!--  상품 카테고리 등록  -->
+    <insert id ="insertProductCategory" parameterType="map">
+        INSERT INTO productcategory(product_id, category_name, category_state)
+        VALUES (#{product_id}, #{category_name}, #{category_state})
+    </insert>
+    <!--  상세 상품 등록  -->
+    <insert id ="insertProductDetail" parameterType="ProductDetailEntity">
+        INSERT INTO productdetail(product_id, product_category_id, name, amount, stock, default_state)
+        VALUES (#{product_id}, #{product_category_id}, #{name}, #{amount}, #{stock}, #{default_state})
     </insert>
 
     <!--  등록한 상품 가져오기  -->
-    <select id="selectListProduct" resultType="ProductEntity">
-        SELECT * FROM product limit 10;
+    <select id="selectAllProductList" resultType="ProductEntity">
+        SELECT * FROM product WHERE isdelete = 0 ORDER BY product_id ASC;
+    </select>
+    <!--  productId로 해당 상품 가져오기  -->
+    <select id="selectProductById" resultType="ProductEntity">
+        SELECT * FROM product WHERE product_id = #{product_id} AND isdelete = 0 ORDER BY product_id ASC;
+    </select>
+    <!--  이름으로 상품 상품 번호 가져오기  -->
+    <select id="selectProductIdByName" resultType="Long">
+        SELECT * FROM product WHERE name = #{name} AND isdelete = 0 ORDER BY product_id ASC;
+    </select>
+    <!--  메인으로 등록된 상품 가져오기  -->
+    <select id="selectMainProduct" resultType="ProductEntity">
+        SELECT * FROM product WHERE main_pic_state = 1 AND isdelete = 0;
+    </select>
+    <!--  해당 상품에 대한 이미지 리스트 가져오기  -->
+    <select id="selectProductImages" parameterType="Long" resultType="ImageEntity">
+        SELECT * FROM productpicture WHERE product_id = #{product_id};
     </select>
 
-    <!--  상세 상품 등록  -->
-    <insert id ="insertProductDetail" useGeneratedKeys="true" keyProperty="product_detail_id" parameterType="ProductDetailEntity">
-        INSERT INTO productdetail(product_id, name, amount, stock)
-        VALUES (#{product_id}, #{name}, #{amount}, #{stock})
-    </insert>
-    <insert id ="insertDetailCategory" parameterType="ProductDetailEntity">
-        INSERT INTO productcategory(product_detail_id, category_name, category_state)
-        VALUES (#{product_detail_id}, #{category_name}, #{category_state})
-    </insert>
-
-    <!--  상세 상품 가져오기  -->
+    <!--  해당 상품의 상세 상품 가져오기  -->
     <select id="selectProductDetailList" parameterType="Long"  resultType="ProductDetailEntity">
-        SELECT * FROM productdetail WHERE product_id = #{productId}
+        SELECT * FROM productdetail WHERE product_id = #{product_id} AND isdelete = 0;
     </select>
-
+    <!--  해당 카테고리의 상세 상품 가져오기  -->
+    <select id="selectProductDetailByCategory" parameterType="Long"  resultType="ProductDetailEntity">
+        SELECT * FROM productdetail WHERE product_category_id = #{product_category_id} AND isdelete = 0;
+    </select>
+    <!--  상세 상품 가져오기  -->
+    <select id="selectProductDetail" parameterType="Long"  resultType="ProductDetailEntity">
+        SELECT * FROM productdetail WHERE product_detail_id = #{product_detail_id} AND isdelete = 0;
+    </select>
+    <!--  모든 상세 상품 가져오기  -->
+    <select id="selectAllProductDetailList" resultType="ProductDetailEntity">
+        SELECT * FROM productdetail WHERE isdelete = 0;
+    </select>
     <!--  상세 상품 카테고리 가져오기  -->
     <select id="selectProductCategory" parameterType="Long"  resultType="ProductDetailEntity">
-        SELECT * FROM productcategory WHERE product_detail_id = #{productDetailId}
+        SELECT * FROM productcategory WHERE product_category_id = #{product_category_id} AND isdelete = 0;
     </select>
+    <!--  상세 상품 카테고리 가져오기  -->
+    <select id="selectCategoryByProductId" parameterType="Long"  resultType="ProductDetailEntity">
+        SELECT * FROM productcategory WHERE product_id = #{product_id} AND isdelete = 0;
+    </select>
+    <!--  상품과 카테고리가 같은 상세 상품 리스트 가져오기  -->
+    <select id="selectSameCategoryDetailList" resultType="ProductDetailEntity">
+        SELECT * FROM productdetail WHERE product_id = #{product_id} AND product_category_id = #{product_category_id} AND isdelete = 0;
+    </select>
+    <!--  해당 상품 카테고리의 category_state 가져오기  -->
+    <select id="selectDetailCategoryState" resultType="int">
+        SELECT category_state FROM productcategory WHERE product_id = #{product_id} AND product_category_id = #{product_category_id} AND isdelete = 0;
+    </select>
+    <!--  상세 상품의 가격 가져오기  -->
+    <select id="selectProductDetailAmount" resultType="int">
+        SELECT amount FROM productdetail WHERE product_detail_id = #{product_detail_id} AND isdelete = 0;
+    </select>
+    <!--  해당 카테고리에서 기본값이 1인 상세 상품 가져오기  -->
+    <select id="selectDefaultedDetailByCategoryId" resultType="ProductDetailEntity">
+        SELECT * FROM productdetail WHERE product_category_id = #{product_category_id} AND default_state = 1 AND isdelete = 0;
+    </select>
+
+    <!--  상품 수정하기  -->
+    <update id="updateProduct" parameterType="ProductEntity">
+        UPDATE product
+        SET name = #{name},
+            type = #{type}
+        WHERE product_id = #{product_id} AND isdelete = 0;
+    </update>
+    <!--  이미지 수정하기  -->
+    <update id="updateProductPicture" parameterType="ImageEntity">
+        UPDATE productpicture
+        SET img_path = #{img_path},
+            img_name = #{img_name},
+            img_size = #{img_size}
+        WHERE img_id = #{img_id};
+    </update>
+
+
+    <!--  상품 카테고리 수정하기  -->
+    <update id="updateProductCategory">
+        UPDATE productcategory
+        SET category_name = #{category_name}
+        WHERE product_id = #{product_id} AND product_category_id = #{product_category_id} AND isdelete = 0;
+    </update>
+
+    <!--  상세 상품 수정하기  -->
+    <update id="updateProductDetail">
+        UPDATE productdetail
+        SET name = #{name},
+            amount = #{amount},
+            stock = #{stock}
+        WHERE product_detail_id = #{product_detail_id} AND isdelete = 0;
+    </update>
+
+    <!--  상세 상품의 기본 값 가격 상품 가격에 추가하기   -->
+   <update id="updateProductAmount">
+        UPDATE product
+        SET amount = amount + #{amount}
+        WHERE product_id = #{product_id} AND isdelete = 0;
+    </update>
 
     <!--  상세 상품 기본 값 세팅  -->
     <update id="updateProductDefault">
         UPDATE productdetail
         SET default_state = IF(default_state = 0, 1, 0)
-        WHERE product_id = #{product_id} and product_detail_id = #{product_detail_id}
+        WHERE product_detail_id = #{product_detail_id} AND isdelete = 0;
+    </update>
+    <!--  카테고리 기본 값 세팅  -->
+    <update id="updateCategoryDefault">
+        UPDATE productcategory
+        SET category_state = IF(category_state = 0, 1, 0)
+        WHERE product_category_id = #{product_category_id} AND isdelete = 0;
+    </update>
+    <!--  상품 메인 사진 STATE, IMG 세팅  -->
+    <update id="setMainProduct">
+        UPDATE product
+        SET main_pic_state = IF(main_pic_state = 0, 1, 0)
+        WHERE product_id = #{product_id} AND isdelete = 0;
     </update>
 
-    <!--  상품 리스트 메인 사진 STATE, IMG 세팅  -->
-    <update id="insertMainPic">
+    <!--  이름 존재 여부 확인하기  -->
+    <select id="isProductNameExists" parameterType="String" resultType="int">
+        SELECT COUNT(*) FROM product WHERE name = #{name} AND isdelete = 0;
+    </select>
+    <select id="isDetailNameExists" parameterType="map" resultType="int">
+        SELECT COUNT(*) FROM productdetail WHERE name = #{name} AND product_id = #{product_id} AND isdelete = 0;
+    </select>
+    <select id="isCategoryNameExists" parameterType="map" resultType="int">
+        SELECT COUNT(*) FROM productcategory WHERE category_name = #{category_name} AND product_id = #{product_id} AND isdelete = 0;
+    </select>
+
+
+    <!--  이름 가져오기 -->
+    <select id="selectProductName" parameterType="Long" resultType="String">
+        SELECT name FROM product WHERE product_id = #{product_id} AND isdelete = 0;
+    </select>
+    <select id="selectCategoryName" parameterType="Long" resultType="String">
+        SELECT category_name FROM productcategory WHERE product_category_id = #{product_category_id} AND isdelete = 0;
+    </select>
+    <select id="selectProductDetailName" parameterType="Long" resultType="String">
+        SELECT name FROM productdetail WHERE product_detail_id = #{product_detail_id} AND isdelete = 0;
+    </select>
+
+
+
+    <update id="deleteProduct">
         UPDATE product
-        SET main_picture = #{main_pic_path}
-        WHERE product_id = #{product_id};
+        SET isdelete = 1
+        WHERE product_id = #{product_id}
     </update>
-    <update id="updateMainPicState">
-        UPDATE product
-        SET main_pic_state = #{main_pic_state}
+    <update id="deleteCategoryByProductId">
+        UPDATE productcategory
+        SET isdelete = 1
+        WHERE product_id = #{product_id}
+    </update>
+    <update id="deleteProductDetailByProductId">
+        UPDATE productdetail
+        SET isdelete = 1
         WHERE product_id = #{product_id}
     </update>
 
-
+    <update id="deleteCategory" parameterType="Long">
+        UPDATE productcategory
+        SET isdelete = 1
+        WHERE product_category_id = #{product_category_id}
+    </update>
+    <update id="deleteProductDetail" parameterType="Long">
+        UPDATE productdetail
+        SET isdelete = 1
+        WHERE product_detail_id = #{product_detail_id}
+    </update>
 </mapper>

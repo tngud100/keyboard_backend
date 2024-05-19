@@ -42,7 +42,8 @@ public class ImgUploadService {
         String current_date = simpleDateFormat.format(new Date());
 
         // 프로젝트 폴더에 저장하기 위해 절대경로를 설정 (Window 의 Tomcat 은 Temp 파일을 이용한다)
-        String absolutePath = new File("").getAbsolutePath() + "\\"+uploadPath;
+        String absolutePath = new File("").getAbsolutePath() +uploadPath;
+//        String absolutePath = new File("").getAbsolutePath() + "\\" +uploadPath;
 
         // 경로를 지정하고 그곳에다가 저장
         File file = new File(absolutePath);

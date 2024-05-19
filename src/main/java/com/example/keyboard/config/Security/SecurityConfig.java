@@ -86,12 +86,12 @@ public class SecurityConfig  {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-//                        .anyRequest().permitAll())
-                        .requestMatchers("/api/**").permitAll()
+                        .anyRequest().permitAll());
+//                        .requestMatchers("/api/**").permitAll()
 //                        .requestMatchers("").permitAll()
-                        .requestMatchers("/login").hasRole("Admin")
+//                        .requestMatchers("/login").hasRole("Admin")
 //                        .requestMatchers("/api/list/get").permitAll()
-                        .anyRequest().authenticated());
+//                        .anyRequest().authenticated());
 
         http
                 .sessionManagement((session) -> session
