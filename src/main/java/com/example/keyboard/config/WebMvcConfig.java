@@ -22,9 +22,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry){
         registry
                 .addResourceHandler("/images/**")
-                .addResourceLocations("file:/Users/kimsoohyeong/Desktop/keyboard_backend/src/main/resources/static/images/");
-//                .addResourceLocations("file:/src/main/resources/static/images");
+//                .addResourceLocations("file:/Users/kimsoohyeong/Desktop/keyboard_backend/src/main/resources/static/images/");
+                .addResourceLocations("file:C:/Users/개미인스/Desktop/조선 타자기/git/Keyboard_backend/src/main/resources/static/images/");
     }
-
-
 }
