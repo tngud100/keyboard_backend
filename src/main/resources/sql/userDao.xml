@@ -13,6 +13,10 @@
     <select id="existsById" parameterType="String" resultType="String">
         select LOGIN_ID from member where LOGIN_ID = #{LOGIN_ID}
     </select>
+    <!-- 중복확인 -->
+    <select id="existsByPhoneNum" parameterType="String" resultType="String">
+        select PHONE_NUM from member where PHONE_NUM = #{PHONE_NUM}
+    </select>
 
     <!--  회원가입  -->
     <insert id="join" parameterType="MemberEntity">

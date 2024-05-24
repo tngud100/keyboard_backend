@@ -5,6 +5,7 @@ import com.example.keyboard.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jdk.jfr.Frequency;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -53,12 +54,25 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "로그인 중복 확인")
+    @GetMapping("/isIdDuplicateId")
+    public ResponseEntity<Object> duplicateLoginId(@RequestParam(value = "Id") String Id){
+        try {
+            String isDuplicate = userService.duplicateLoginId(Id);
+            return new ResponseEntity<>(isDuplicate, HttpStatus.OK);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @Operation(summary = "휴대폰 인증번호 전송")
     @PostMapping("/send")
     public ResponseEntity<Object> sendVerifyNum(@RequestParam(value="phoneNum") String phoneNum){
         try {
             if(phoneNum.contains("-")){
-                return new ResponseEntity<>("하이폰 제거 후 번호 다시 입력", HttpStatus.OK);
+                return new ResponseEntity<>("하이폰 제거 후 번호 다시 입력", HttpStatus.BAD_REQUEST);
             }
             userService.sendVerifyNum(phoneNum);
             return new ResponseEntity<>("인증번호 발송 완료", HttpStatus.OK);

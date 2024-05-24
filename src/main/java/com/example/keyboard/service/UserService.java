@@ -35,12 +35,12 @@ public class UserService {
 
     public String join(MemberEntity vo) throws Exception {
         MemberEntity userVO = new MemberEntity();
-        String userId = vo.getLOGIN_ID();
+        String phoneNum = vo.getPHONE_NUM();
 
-        String existId = authDao.existsById(userId);
+        String existAccount = authDao.existsByPhoneNum(phoneNum);
     
-        if(existId != null){
-            return "아이디가 중복입니다.";
+        if(existAccount != null){
+            return "이미 등록된 휴대폰 번호 입니다.";
         }
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -48,6 +48,14 @@ public class UserService {
 
         authDao.join(vo);
         return  "회원가입 성공!";
+    }
+
+    public String duplicateLoginId(String id) throws Exception{
+        String existId = authDao.existsById(id);
+        if(existId != null){
+            return "아이디가 중복입니다.";
+        }
+        return null;
     }
 
     public void logout(String AccessToken, String RefreshToken) {
