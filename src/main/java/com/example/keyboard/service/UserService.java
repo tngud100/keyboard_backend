@@ -71,7 +71,7 @@ public class UserService {
         }
     }
 
-    public void sendVerifyNum(String phoneNum){
+    public String sendVerifyNum(String phoneNum){
         Random random = new Random();
         // 6자리 랜덤 값 입력
         int verificationCode = random.nextInt(900000) + 100000;
@@ -81,6 +81,7 @@ public class UserService {
         smsUtil.sendOne(phoneNum, verificationCodeStr);
         //인증코드 유효기간 3분 설정
         redisUtils.setData(phoneNum, verificationCodeStr,30 * 60 * 10 * 10L);
+        return verificationCodeStr;
     }
 
     public boolean checkVerifyNum(String phoneNum, String verifyNum){

@@ -69,13 +69,13 @@ public class UserController {
 
     @Operation(summary = "휴대폰 인증번호 전송")
     @PostMapping("/send")
-    public ResponseEntity<Object> sendVerifyNum(@RequestParam(value="phoneNum") String phoneNum){
+    public ResponseEntity<Object> sendVerifyNum(@RequestParam(value = "phoneNum") String phoneNum){
         try {
             if(phoneNum.contains("-")){
                 return new ResponseEntity<>("하이폰 제거 후 번호 다시 입력", HttpStatus.BAD_REQUEST);
             }
-            userService.sendVerifyNum(phoneNum);
-            return new ResponseEntity<>("인증번호 발송 완료", HttpStatus.OK);
+            String verificationCodeStr = userService.sendVerifyNum(phoneNum);
+            return new ResponseEntity<>(verificationCodeStr, HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -83,9 +83,9 @@ public class UserController {
     }
     @Operation(summary = "휴대폰 인증번호 확인")
     @GetMapping("/verify")
-    public ResponseEntity<Object> checkVerifyNum(@RequestParam(value="phoneNum") String phoneNum, @RequestParam(value="verifyNum") String varifyNum){
+    public ResponseEntity<Object> checkVerifyNum(@RequestParam(value = "phoneNum") String phoneNum, @RequestParam(value = "verifyNum") String verifyNum){
         try {
-            boolean check = userService.checkVerifyNum(phoneNum, varifyNum);
+            boolean check = userService.checkVerifyNum(phoneNum, verifyNum);
             return new ResponseEntity<>(check, HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
