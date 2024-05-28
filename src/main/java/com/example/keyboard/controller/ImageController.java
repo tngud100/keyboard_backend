@@ -1,9 +1,7 @@
     package com.example.keyboard.controller;
 
-    import com.example.keyboard.entity.Image.ImageEntity;
-    import com.example.keyboard.entity.Image.ProductImageEntity;
-    import com.example.keyboard.entity.product.ProductEntity;
-    import com.example.keyboard.repository.ProductDao;
+    import com.example.keyboard.entity.Image.product.ProductDaoEntity;
+    import com.example.keyboard.entity.Image.product.ProductImageEntity;
     import com.example.keyboard.service.ImgUploadService;
     import io.swagger.v3.oas.annotations.Operation;
     import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,7 +11,6 @@
     import org.springframework.web.bind.annotation.*;
     import org.springframework.web.multipart.MultipartFile;
 
-    import java.io.File;
     import java.util.ArrayList;
     import java.util.List;
 
@@ -42,11 +39,11 @@
                 picture.add(list_back_picture);
 
                 for(int i = 0; i < picture.size(); i ++){
-                    ImageEntity imgEntity = imgUploadService.uploadImg(picture.get(i), product_id);
+                    ProductDaoEntity imgEntity = imgUploadService.uploadImg(picture.get(i), product_id);
                     imgUploadService.saveImgPath(imgEntity);
                 }
                 for( MultipartFile desc_pic : desc_picture){
-                    ImageEntity imgEntity = imgUploadService.uploadImg(desc_pic, product_id);
+                    ProductDaoEntity imgEntity = imgUploadService.uploadImg(desc_pic, product_id);
                     imgUploadService.saveImgPath(imgEntity);
                 }
 
@@ -58,7 +55,7 @@
         }
         public ResponseEntity<Object> uploadMainImg(MultipartFile mainImg, @RequestParam("product_id") Long product_id) throws Exception{
             try {
-                ImageEntity imgEntity = imgUploadService.uploadImg(mainImg, product_id);
+                ProductDaoEntity imgEntity = imgUploadService.uploadImg(mainImg, product_id);
                 imgUploadService.saveImgPath(imgEntity);
                 return new ResponseEntity<>("이미지 업로드 완료", HttpStatus.OK);
             }catch (Exception e){

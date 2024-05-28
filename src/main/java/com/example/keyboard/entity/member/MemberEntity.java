@@ -11,9 +11,10 @@ public class MemberEntity {
     private String PASSWORD;            // 비밀번호
     private String USER_NAME;           // 유저 이름
     private String PHONE_NUM;           // 전화번호
-    private String ADDRESS;             // 주소
     private String ZIPCODE;             // 우편번호
-    private String ADDRESS_DETAIL;      // 상세 주소
+    private String ROAD_ADDRESS;             // 주소
+    private String JIBUN_ADDRESS;             // 주소
+    private String DETAIL_ADDRESS;      // 상세 주소
     private String EMAIL;               // 이메일
     private LocalDate BIRTHDAY;         // 생년월일
     private String ROLE;                // 유저 권한

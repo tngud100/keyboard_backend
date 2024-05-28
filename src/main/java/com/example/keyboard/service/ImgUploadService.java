@@ -1,21 +1,17 @@
 package com.example.keyboard.service;
 
-import com.example.keyboard.entity.Image.ImageEntity;
-import com.example.keyboard.entity.Image.ProductImageEntity;
+import com.example.keyboard.entity.Image.product.ProductDaoEntity;
+import com.example.keyboard.entity.Image.product.ProductImageEntity;
 import com.example.keyboard.entity.product.ProductEntity;
 import com.example.keyboard.repository.ImageDao;
-import com.example.keyboard.repository.ProductDao;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -27,10 +23,10 @@ public class ImgUploadService {
     private String uploadPath;
 
     private final ImageDao imageDao;
-    private ImageEntity fileEntity;
-    private final ProductDao productDao;
+    private ProductDaoEntity fileEntity;
+    private final com.example.keyboard.repository.ProductDao productDao;
 
-    public ImageEntity uploadImg(MultipartFile multipartFile, Long product_id) throws Exception {
+    public ProductDaoEntity uploadImg(MultipartFile multipartFile, Long product_id) throws Exception {
 
         // 파일이 빈 것이 들어오면 빈 것을 반환
         if (multipartFile.isEmpty()) {
@@ -77,7 +73,7 @@ public class ImgUploadService {
             // 각 이름은 겹치면 안되므로 나노 초까지 동원하여 지정
             String new_file_name = System.nanoTime() + originalFileExtension;
             // 생성 후 리스트에 추가
-            fileEntity = new ImageEntity();
+            fileEntity = new ProductDaoEntity();
             fileEntity.setProduct_id(product_id);
             fileEntity.setImg_name(multipartFile.getOriginalFilename());
             fileEntity.setImg_path("/images" + File.separator + new_file_name);
@@ -96,11 +92,11 @@ public class ImgUploadService {
 
         Long productId = productImageEntity.getProduct_id();
         ProductEntity lastProductEntity = productDao.selectProductById(productId);
-        List<ImageEntity> lastImageEntity = productDao.selectProductImages(productId);
+        List<ProductDaoEntity> lastImageEntity = productDao.selectProductImages(productId);
 
         String[] imageField = { "list_picture", "list_back_picture", "represent_picture", "desc_picture"};
 
-        for( ImageEntity imageVO : lastImageEntity){
+        for( ProductDaoEntity imageVO : lastImageEntity){
             String type = imageVO.getImg_type();
             String name = imageVO.getImg_name();
             String path = imageVO.getImg_path();
@@ -111,14 +107,14 @@ public class ImgUploadService {
                 }
             }
         }
-        ImageEntity newProductImageEntity = modifyImg(productImageEntity, lastImageEntity);
+        ProductDaoEntity newProductImageEntity = modifyImg(productImageEntity, lastImageEntity);
         System.out.println("last:"+lastProductEntity);
         System.out.println("now:"+productImageEntity);
         System.out.println("new:"+newProductImageEntity);
     }
 
-    public ImageEntity modifyImg(ProductImageEntity productImageVO, List<ImageEntity> lastImageEntity) throws Exception {
-        ImageEntity newImageEntity = new ImageEntity();
+    public ProductDaoEntity modifyImg(ProductImageEntity productImageVO, List<ProductDaoEntity> lastImageEntity) throws Exception {
+        ProductDaoEntity newImageEntity = new ProductDaoEntity();
 
         String absolutePath = new File("").getAbsolutePath() + "\\" + uploadPath;
 
@@ -155,10 +151,10 @@ public class ImgUploadService {
     }
 
 
-    private void processDescPicture(MultipartFile descPicture, List<ImageEntity> lastImageEntity, String absolutePath, ImageEntity newImageEntity, int descListSize, int descIndex) throws Exception {
+    private void processDescPicture(MultipartFile descPicture, List<ProductDaoEntity> lastImageEntity, String absolutePath, ProductDaoEntity newImageEntity, int descListSize, int descIndex) throws Exception {
         boolean addImgState = false;
         if (descPicture != null && !descPicture.isEmpty()) {
-            for (ImageEntity imgEntity : lastImageEntity) {
+            for (ProductDaoEntity imgEntity : lastImageEntity) {
                 if (descPicture.getName().equals(imgEntity.getImg_type())) {
                     newImageEntity.setImg_id(imgEntity.getImg_id());
                     newImageEntity.setImg_name(descPicture.getOriginalFilename());
@@ -175,7 +171,7 @@ public class ImgUploadService {
                     System.out.println("이미지Index: " + descIndex);
 
                     if(deleted){
-                        for (ImageEntity oldImgEntity : lastImageEntity) {
+                        for (ProductDaoEntity oldImgEntity : lastImageEntity) {
                             if (oldImgEntity.getImg_type().equals("desc_picture")) {
                                 String oldImgPath = absolutePath + oldImgEntity.getImg_path().replace("/images", "");
                                 File oldImageFile = new File(oldImgPath);
@@ -228,9 +224,9 @@ public class ImgUploadService {
         }
     }
 
-    public void processImageField(MultipartFile multipartFile, List<ImageEntity> lastImageEntity, String absolutePath, ImageEntity newImageEntity) throws Exception {
+    public void processImageField(MultipartFile multipartFile, List<ProductDaoEntity> lastImageEntity, String absolutePath, ProductDaoEntity newImageEntity) throws Exception {
         if (multipartFile != null && !multipartFile.isEmpty()) {
-            for (ImageEntity imgEntity : lastImageEntity) {
+            for (ProductDaoEntity imgEntity : lastImageEntity) {
                 if (multipartFile.getName().equals(imgEntity.getImg_type())) {
                     newImageEntity.setImg_id(imgEntity.getImg_id());
                     newImageEntity.setImg_name(multipartFile.getOriginalFilename());
@@ -274,24 +270,22 @@ public class ImgUploadService {
         }
     }
 
-    public void saveImgPath(ImageEntity imgDao) throws Exception{
-        List<ImageEntity> ImageListByProductId = imageDao.selectMainPictureByProductId(imgDao.getProduct_id());
+    public void saveImgPath(ProductDaoEntity imgDao) throws Exception{
+        List<ProductDaoEntity> ImageListByProductId = imageDao.selectMainPictureByProductId(imgDao.getProduct_id());
         if(ImageListByProductId.size() > 1){
             imageDao.deleteMainPictureByProductId(imgDao.getProduct_id());
-
-
         }
         imageDao.saveProductImage(imgDao);
     }
 
     public void deleteImg(Long product_id) throws Exception{
-        List<ImageEntity> ImageListByProductId = imageDao.selectPictureByProductId(product_id);
+        List<ProductDaoEntity> ImageListByProductId = imageDao.selectPictureByProductId(product_id);
 
         String absolutePath = new File("").getAbsolutePath() + "\\" + uploadPath;
 
         imageDao.deletePictureByProductId(product_id);
 
-        for( ImageEntity imageEntity : ImageListByProductId){
+        for( ProductDaoEntity imageEntity : ImageListByProductId){
             String path = imageEntity.getImg_path();
             String lastImgPath = absolutePath + path.replace("/images", "");
             File file = new File(lastImgPath);
@@ -307,14 +301,14 @@ public class ImgUploadService {
         }
     }
     public void deleteMainImg(Long product_id) throws Exception{
-        List<ImageEntity> ImageListByProductId = imageDao.selectPictureByProductId(product_id);
+        List<ProductDaoEntity> ImageListByProductId = imageDao.selectPictureByProductId(product_id);
 
         String absolutePath = new File("").getAbsolutePath() + "\\" + uploadPath;
 
         imageDao.deleteMainPictureByProductId(product_id);
         productDao.setMainProduct(product_id);
 
-        for( ImageEntity imageEntity : ImageListByProductId){
+        for( ProductDaoEntity imageEntity : ImageListByProductId){
             String imageEntityType = imageEntity.getImg_type();
             if(imageEntityType.equals("main_picture")){
                 String path = imageEntity.getImg_path();

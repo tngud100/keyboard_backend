@@ -1,4 +1,4 @@
-package com.example.keyboard.entity.Image;
+package com.example.keyboard.entity.Image.product;
 
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;

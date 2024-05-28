@@ -1,14 +1,12 @@
 package com.example.keyboard.service;
 
 import com.example.keyboard.controller.ImageController;
-import com.example.keyboard.entity.Image.ImageEntity;
-import com.example.keyboard.entity.Image.ProductImageEntity;
+import com.example.keyboard.entity.Image.product.ProductDaoEntity;
+import com.example.keyboard.entity.Image.product.ProductImageEntity;
 import com.example.keyboard.entity.product.ProductDetailEntity;
 import com.example.keyboard.entity.product.ProductEntity;
-import com.example.keyboard.repository.ProductDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -16,7 +14,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ProductService {
 
-    public final ProductDao productDao;
+    public final com.example.keyboard.repository.ProductDao productDao;
     public final ImageController imgController;
 
     // 상품 등록
@@ -60,9 +58,9 @@ public class ProductService {
     }
     public ProductEntity selectProduct(Long product_id) throws Exception{
         ProductEntity product = productDao.selectProductById(product_id);
-        List<ImageEntity> ImageList = selectProductImgList(product_id);
+        List<ProductDaoEntity> ImageList = selectProductImgList(product_id);
 
-        for(ImageEntity productImg : ImageList){
+        for(ProductDaoEntity productImg : ImageList){
             String Img_type = productImg.getImg_type();
             String Img_path = productImg.getImg_path();
             String Img_name = productImg.getImg_name();
@@ -84,7 +82,7 @@ public class ProductService {
         return product;
     }
     // 상품의 이미지 가져오기
-    public List<ImageEntity> selectProductImgList(Long product_id) throws Exception{
+    public List<ProductDaoEntity> selectProductImgList(Long product_id) throws Exception{
         return productDao.selectProductImages(product_id);
     }
     // 상품의 카테고리 가져오기
@@ -142,8 +140,8 @@ public class ProductService {
     public List<ProductEntity> selectMainProductList() throws Exception{
         List<ProductEntity> ProductEntities = productDao.selectMainProduct();
         for(ProductEntity VO :  ProductEntities){
-            List<ImageEntity> ImgVO = productDao.selectProductImages(VO.getProduct_id());
-            for(ImageEntity img : ImgVO){
+            List<ProductDaoEntity> ImgVO = productDao.selectProductImages(VO.getProduct_id());
+            for(ProductDaoEntity img : ImgVO){
                 if(img.getImg_type().equals("main_picture")){
                     String name = img.getImg_name();
                     String path = img.getImg_path();

@@ -1,6 +1,6 @@
 package com.example.keyboard.repository;
 
-import com.example.keyboard.entity.Image.ImageEntity;
+import com.example.keyboard.entity.Image.product.ProductDaoEntity;
 import com.example.keyboard.entity.product.ProductDetailEntity;
 import com.example.keyboard.entity.product.ProductEntity;
 import org.apache.ibatis.annotations.Mapper;
@@ -21,7 +21,7 @@ public interface ProductDao {
     public List<ProductEntity> selectAllProductList() throws Exception;
     public Long selectProductIdByName(@Param("name") String name) throws Exception;
     public ProductEntity selectProductById(@Param("product_id") Long product_id) throws Exception;
-    public List<ImageEntity> selectProductImages(@Param("product_id") Long product_id) throws Exception;
+    public List<ProductDaoEntity> selectProductImages(@Param("product_id") Long product_id) throws Exception;
     public List<ProductDetailEntity> selectAllProductDetailList() throws Exception;
     public ProductDetailEntity selectProductDetail(@Param("product_detail_id") Long product_detail_id) throws Exception;
     public List<ProductDetailEntity> selectSameCategoryDetailList(@Param("product_id") Long product_id, @Param("product_category_id") Long product_category_id) throws Exception;
@@ -48,7 +48,7 @@ public interface ProductDao {
     public void updateCategoryDefault(@Param("product_category_id")Long product_category_id) throws Exception;
     public void updateProductAmount(@Param("product_id") Long product_id, @Param("amount") int amount) throws Exception;
     public void updateProduct(ProductEntity modifiedEntity) throws Exception;
-    public void updateProductPicture(ImageEntity modifiedImageEntity) throws Exception;
+    public void updateProductPicture(ProductDaoEntity modifiedImageEntity) throws Exception;
     public void updateProductDetail(ProductDetailEntity productDetailVO) throws Exception;
     public void updateProductCategory(Map<String, Object> categoryInfo) throws Exception;
     public void setMainProduct(@Param("product_id") Long product_id) throws Exception;

@@ -1,13 +1,12 @@
 package com.example.keyboard.controller;
 
-import com.example.keyboard.entity.Image.ImageEntity;
+import com.example.keyboard.entity.Image.product.ProductDaoEntity;
 import com.example.keyboard.entity.product.ProductDetailEntity;
 import com.example.keyboard.entity.product.ProductEntity;
-import com.example.keyboard.entity.Image.ProductImageEntity;
+import com.example.keyboard.entity.Image.product.ProductImageEntity;
 import com.example.keyboard.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -194,8 +193,8 @@ public class ProductController {
             List<ProductEntity> ProductList =  productService.selectProductList();
             for(ProductEntity product : ProductList){
                 Long product_id = product.getProduct_id();
-                List<ImageEntity> ImageList = productService.selectProductImgList(product_id);
-                for(ImageEntity productImg : ImageList){
+                List<ProductDaoEntity> ImageList = productService.selectProductImgList(product_id);
+                for(ProductDaoEntity productImg : ImageList){
                     String Img_type = productImg.getImg_type();
                     String Img_path = productImg.getImg_path();
                     String Img_name = productImg.getImg_name();

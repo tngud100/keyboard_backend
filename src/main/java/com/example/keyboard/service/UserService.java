@@ -58,6 +58,11 @@ public class UserService {
         return null;
     }
 
+    public MemberEntity getUserByLoginId(String userId) throws Exception{
+        return authDao.findByLoginId(userId);
+    }
+
+
     public void logout(String AccessToken, String RefreshToken) {
         // refreshToken이 redis에 있는지 유무를 확인한다.
         if(RefreshToken != null && jwtUtil.validateRefreshToken(RefreshToken)){
@@ -83,6 +88,8 @@ public class UserService {
         redisUtils.setData(phoneNum, verificationCodeStr,30 * 60 * 10 * 10L);
         return verificationCodeStr;
     }
+
+
 
     public boolean checkVerifyNum(String phoneNum, String verifyNum){
         String certificationNum = redisUtils.getData(phoneNum);

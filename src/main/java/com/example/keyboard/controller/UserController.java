@@ -27,11 +27,10 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "회원가입")
-    @PostMapping("/join")
+    @PostMapping("/signup")
     public ResponseEntity<Object> join(MemberEntity vo){
         try {
             String result = userService.join(vo);
-
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -102,6 +101,18 @@ public class UserController {
             Map<String, String> check = userService.check(AccessToken);
 
             return new ResponseEntity<>(check, HttpStatus.OK);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "유저 정보 데이터 get")
+    @GetMapping("/getUser/${loginId}")
+    public ResponseEntity<Object> getUserByLoginId(@PathVariable("loginId") String loginId){
+        try {
+            MemberEntity memberData = userService.getUserByLoginId(loginId);
+            return new ResponseEntity<>(memberData, HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
