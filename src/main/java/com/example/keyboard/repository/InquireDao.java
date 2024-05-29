@@ -11,7 +11,9 @@ import java.util.List;
 @Repository
 public interface InquireDao {
     public void enrollInquireBoard(InquireEntity inquireEntity) throws Exception;
+
     public List<InquireEntity> selectInquireBoardsByMemberId(@Param("member_id") Long member_id) throws Exception;
+    public InquireEntity selectInquireBoardByInquireId(@Param("inquires_id") Long inquires_id) throws Exception;
 
     public void updateInquireBoard(InquireEntity inquireEntity) throws Exception;
 

@@ -1,11 +1,13 @@
 package com.example.keyboard.service;
 
 import com.example.keyboard.entity.Image.inquire.InquireDaoEntity;
+import com.example.keyboard.entity.Image.inquire.InquireImageEntity;
 import com.example.keyboard.entity.board.inquire.InquireEntity;
 import com.example.keyboard.repository.ImageDao;
 import com.example.keyboard.repository.InquireDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,15 +19,12 @@ import java.util.Map;
 public class InquireService {
     public final InquireDao inquireDao;
     public final ImageDao imageDao;
-    public boolean enrollInquireBoard(InquireEntity inquireEntity) throws Exception{
+    public Long enrollInquireBoard(InquireEntity inquireEntity) throws Exception{
         inquireDao.enrollInquireBoard(inquireEntity);
-        return true;
+        return inquireEntity.getInquires_id();
     }
-    public boolean enrollInquirePicture(List<InquireDaoEntity> inquireDaoEntity) throws Exception{
-        for(InquireDaoEntity inquireImageDao : inquireDaoEntity){
-            imageDao.saveInquireImage(inquireImageDao);
-        }
-        return true;
+    public List<InquireDaoEntity> selectInquireImages(Long inquires_id) throws Exception{
+        return imageDao.selectInquireImage(inquires_id);
     }
 
     public List<Map<String, Object>> selectInquireBoards(Long member_id) throws Exception{
@@ -44,6 +43,11 @@ public class InquireService {
 
         return result;
     }
+
+    public InquireEntity selectInquireBoardByInquireId(Long inquires_id) throws Exception{
+        return inquireDao.selectInquireBoardByInquireId(inquires_id);
+    }
+
     public boolean updateInquireBoard(InquireEntity inquireEntity) throws Exception{
         inquireDao.updateInquireBoard(inquireEntity);
         return true;

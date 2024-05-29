@@ -7,6 +7,6 @@ import java.util.List;
 
 @Data
 public class InquireImageEntity {
-    private long inquires_id;
+    private Long inquires_id;
     private List<MultipartFile> pictures;
 }

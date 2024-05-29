@@ -108,7 +108,7 @@ public class UserController {
     }
 
     @Operation(summary = "유저 정보 데이터 get")
-    @GetMapping("/getUser/${loginId}")
+    @GetMapping("/getUser/{loginId}")
     public ResponseEntity<Object> getUserByLoginId(@PathVariable("loginId") String loginId){
         try {
             MemberEntity memberData = userService.getUserByLoginId(loginId);

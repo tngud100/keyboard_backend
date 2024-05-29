@@ -1,5 +1,7 @@
     package com.example.keyboard.controller;
 
+    import com.example.keyboard.entity.Image.inquire.InquireDaoEntity;
+    import com.example.keyboard.entity.Image.inquire.InquireImageEntity;
     import com.example.keyboard.entity.Image.product.ProductDaoEntity;
     import com.example.keyboard.entity.Image.product.ProductImageEntity;
     import com.example.keyboard.service.ImgUploadService;
@@ -53,6 +55,20 @@
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
             }
         }
+        @Operation(summary = "이미지 업로드")
+        public ResponseEntity<Object> uploadInquireImg(List<MultipartFile> multipartFileList, Long inquires_id) throws Exception {
+            try{
+                for(MultipartFile imgFile : multipartFileList){
+                    InquireDaoEntity inquireDaoEntity = imgUploadService.uploadInquireImg(imgFile, inquires_id);
+                    imgUploadService.saveInquireImgPath(inquireDaoEntity);
+                }
+                return new ResponseEntity<>("이미지 업로드 완료", HttpStatus.OK);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        }
+
         public ResponseEntity<Object> uploadMainImg(MultipartFile mainImg, @RequestParam("product_id") Long product_id) throws Exception{
             try {
                 ProductDaoEntity imgEntity = imgUploadService.uploadImg(mainImg, product_id);
