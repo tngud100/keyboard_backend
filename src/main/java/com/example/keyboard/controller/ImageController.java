@@ -110,5 +110,17 @@
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
             }
         }
+
+        public ResponseEntity<Object> modifyInquireImg(List<MultipartFile> multipartFileList, Long inquires_id) throws Exception{
+            try{
+                for(MultipartFile imgFile : multipartFileList){
+
+                }
+                return new ResponseEntity<>("이미지 수정 완료", HttpStatus.OK);
+            }catch(Exception e) {
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        }
     }
 

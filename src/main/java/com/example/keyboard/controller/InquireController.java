@@ -86,6 +86,24 @@ public class InquireController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @Operation(summary = "문의 사진 수정", description = "문의 사진 수정하기")
+    @PostMapping("/update/pictures/{inquire_id}")
+    public ResponseEntity<Object> updateInquirePicture(InquireImageEntity inquireDaoEntity){
+        try{
+            List<MultipartFile> Images = inquireDaoEntity.getPictures();
+            Long inquires_id = inquireDaoEntity.getInquires_id();
+            String existFileName= inquireDaoEntity.getExistedFileName();
+            System.out.println(Images);
+            System.out.println(inquires_id);
+            System.out.println(existFileName);
+//            imageController.uploadInquireImg(Images, inquires_id);
+
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @Operation(summary = "해당 유저의 문의 삭제", description = "해당 유저의 등록된 문의 게시글 삭제")
     @DeleteMapping("/delete/{inquires_id}")
     public ResponseEntity<Object> deleteInquireBoard(@PathVariable("inquires_id") Long inquire_id){

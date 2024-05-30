@@ -23,7 +23,9 @@
     <update id="updateInquireBoard" parameterType="InquireEntity">
         UPDATE inquires
         SET title = #{title},
-            content = #{content}
+            content = #{content},
+            inquire_type= #{inquire_type}
+
         WHERE inquires_id = #{inquires_id}
     </update>
 
