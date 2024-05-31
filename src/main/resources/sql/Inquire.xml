@@ -19,6 +19,7 @@
         SELECT * FROM inquires WHERE inquires_id = #{inquires_id} AND isdelete = 0;
     </select>
 
+
     <!-- 문의 수정 -->
     <update id="updateInquireBoard" parameterType="InquireEntity">
         UPDATE inquires

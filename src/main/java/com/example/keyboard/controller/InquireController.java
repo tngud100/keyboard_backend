@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,22 +89,64 @@ public class InquireController {
         }
     }
     @Operation(summary = "문의 사진 수정", description = "문의 사진 수정하기")
-    @PostMapping("/update/pictures/{inquire_id}")
-    public ResponseEntity<Object> updateInquirePicture(InquireImageEntity inquireDaoEntity){
-        try{
-            List<MultipartFile> Images = inquireDaoEntity.getPictures();
-            Long inquires_id = inquireDaoEntity.getInquires_id();
-            String existFileName= inquireDaoEntity.getExistedFileName();
-            System.out.println(Images);
-            System.out.println(inquires_id);
-            System.out.println(existFileName);
-//            imageController.uploadInquireImg(Images, inquires_id);
+    @PutMapping("/update/pictures/{inquire_id}")
+    public ResponseEntity<Object> updateInquirePicture(@ModelAttribute InquireImageEntity inquireImageEntity) {
+        try {
+            List<Integer> fileIdx = new ArrayList<>();
+            List<Integer> existedNameIdx = new ArrayList<>();
+            Long inquires_id = inquireImageEntity.getInquires_id();
+
+            List<MultipartFile> pictures = inquireImageEntity.getPictures();
+            if (pictures == null) {
+                System.out.println("파일 없음");
+            } else {
+                for (int i = 0; i < pictures.size(); i++) {
+                    MultipartFile file = pictures.get(i);
+                    if (file == null) {
+                        System.out.println("파일 없음");
+                    } else {
+                        fileIdx.add(i);
+                        System.out.println("파일 " + i + ": " + file);
+                    }
+                }
+            }
+
+            List<String> existedFileName = inquireImageEntity.getExistedFileName();
+            if (existedFileName == null) {
+                System.out.println("이름 없음");
+            } else {
+                for (int i = 0; i < existedFileName.size(); i++) {
+                    String name = existedFileName.get(i);
+                    if (name == null) {
+                        System.out.println("이름 없음");
+                    } else {
+                        existedNameIdx.add(i);
+                        System.out.println("이름 " + i + ": " + name);
+                    }
+                }
+            }
+
+            if(fileIdx.isEmpty()){
+                return new ResponseEntity<>("변경된 사진 없음", HttpStatus.OK);
+            }
+
+            for (int i = 0; i < fileIdx.size(); i++){
+                int idx = fileIdx.get(i); // fileIdx 리스트에서 현재 인덱스를 가져옴
+                String imgName = existedFileName.get(idx); // existedNameIdx 리스트에서 해당 인덱스에 해당하는 값을 가져와 출력
+                MultipartFile imgfile = pictures.get(idx);
+
+                imageController.modifyInquireImg(imgfile, imgName, inquires_id);
+            }
+
 
             return new ResponseEntity<>(true, HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+
+
 
     @Operation(summary = "해당 유저의 문의 삭제", description = "해당 유저의 등록된 문의 게시글 삭제")
     @DeleteMapping("/delete/{inquires_id}")

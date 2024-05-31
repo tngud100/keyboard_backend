@@ -111,11 +111,13 @@
             }
         }
 
-        public ResponseEntity<Object> modifyInquireImg(List<MultipartFile> multipartFileList, Long inquires_id) throws Exception{
+        public ResponseEntity<Object> modifyInquireImg(MultipartFile imgFile, String existedFileName, Long inquires_id) throws Exception{
             try{
-                for(MultipartFile imgFile : multipartFileList){
+                InquireDaoEntity deletedInquireDaoEntity = imgUploadService.deleteBeforeInquireImg(existedFileName, inquires_id);
+                imgUploadService.deleteInquireImg(deletedInquireDaoEntity);
+                InquireDaoEntity newInquireDaoEntity = imgUploadService.uploadInquireImg(imgFile, inquires_id);
+                imgUploadService.saveInquireImgPath(newInquireDaoEntity);
 
-                }
                 return new ResponseEntity<>("이미지 수정 완료", HttpStatus.OK);
             }catch(Exception e) {
                 System.out.println(e.getMessage());

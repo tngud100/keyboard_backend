@@ -6,6 +6,7 @@ import com.example.keyboard.entity.Image.product.ProductDaoEntity;
 import com.example.keyboard.entity.Image.product.ProductImageEntity;
 import com.example.keyboard.entity.product.ProductEntity;
 import com.example.keyboard.repository.ImageDao;
+import com.example.keyboard.repository.InquireDao;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -210,6 +211,8 @@ public class ImgUploadService {
     }
 
 
+
+
     private void processDescPicture(MultipartFile descPicture, List<ProductDaoEntity> lastImageEntity, String absolutePath, ProductDaoEntity newImageEntity, int descListSize, int descIndex) throws Exception {
         boolean addImgState = false;
         if (descPicture != null && !descPicture.isEmpty()) {
@@ -338,10 +341,6 @@ public class ImgUploadService {
     }
 
     public void saveInquireImgPath(InquireDaoEntity imgDao) throws Exception{
-        List<InquireDaoEntity> ImageListByInquiresId = imageDao.selectInquireImage(imgDao.getInquires_id());
-        if(ImageListByInquiresId.size() > 1){
-            imageDao.deleteMainPictureByProductId(imgDao.getInquires_id());
-        }
         imageDao.saveInquireImage(imgDao);
     }
 
@@ -393,4 +392,31 @@ public class ImgUploadService {
             }
         }
     }
+
+
+    public InquireDaoEntity deleteBeforeInquireImg( String existedFileName, Long inquires_id) throws Exception {
+        InquireDaoEntity inquireDaoEntity = imageDao.selectInquireImageByPictureName(existedFileName, inquires_id);
+        String absolutePath = new File("").getAbsolutePath() + "\\" + uploadPath;
+
+        String path = inquireDaoEntity.getPicture_path();
+        String lastImgPath = absolutePath + path.replace("/images", "");
+        File file = new File(lastImgPath);
+        if (file.exists()) {
+            if (file.delete()) {
+                System.out.println("File delete successfully");
+            } else {
+                System.out.println("Failed to delete file");
+            }
+        } else {
+            System.out.println("File not found");
+        }
+        return inquireDaoEntity;
+    }
+
+    public void deleteInquireImg(InquireDaoEntity inquireDaoEntiy) throws Exception{
+        Long inquirePictureId = inquireDaoEntiy.getInquire_picture_id();
+        imageDao.deleteInquirePicturesByPictureId(inquirePictureId);
+    }
+
+
 }

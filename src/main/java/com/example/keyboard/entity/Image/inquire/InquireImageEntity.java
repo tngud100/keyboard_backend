@@ -9,5 +9,5 @@ import java.util.List;
 public class InquireImageEntity {
     private Long inquires_id;
     private List<MultipartFile> pictures;
-    private String existedFileName;
+    private List<String> existedFileName;
 }

@@ -20,6 +20,8 @@ public interface ImageDao {
 
     public void saveInquireImage(InquireDaoEntity imageVO) throws Exception;
     public List<InquireDaoEntity> selectInquireImage(@Param("inquires_id") Long inquires_id) throws Exception;
-    public void deleteInquirePicturesById(@Param("inquires_id") Long inquires_id) throws Exception;
+    public InquireDaoEntity selectInquireImageByPictureName(@Param("picture_name") String picture_name, @Param("inquires_id") Long inquires_id) throws Exception;
 
+    public void deleteInquirePicturesById(@Param("inquires_id") Long inquires_id) throws Exception;
+    public void deleteInquirePicturesByPictureId(@Param("inquire_picture_id") Long inquire_picture_id) throws Exception;
 }

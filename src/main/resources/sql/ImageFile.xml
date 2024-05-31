@@ -8,6 +8,7 @@
         INSERT INTO productpicture(product_id, img_path, img_name, img_size, img_type)
         VALUES (#{product_id}, #{img_path}, #{img_name}, #{img_size}, #{img_type})
     </insert>
+
     <select id="selectMainPictureByProductId" parameterType="Long" resultType="ProductDaoEntity">
         SELECT * FROM productpicture WHERE product_id = #{product_id} AND img_type = 'main_picture'
     </select>
@@ -32,7 +33,13 @@
     <select id="selectInquireImage" parameterType="Long" resultType="InquireDaoEntity">
         SELECT * FROM inquirepictures WHERE inquires_id = #{inquires_id}
     </select>
+    <select id="selectInquireImageByPictureName" resultType="InquireDaoEntity">
+        SELECT * FROM inquirepictures WHERE picture_name = #{picture_name} AND inquires_id = #{inquires_id}
+    </select>
     <delete id="deleteInquirePicturesById" parameterType="Long">
         DELETE FROM inquirepictures WHERE inquires_id = #{inquires_id}
+    </delete>
+    <delete id="deleteInquirePicturesByPictureId" parameterType="Long">
+        DELETE FROM inquirepictures WHERE inquire_picture_id = #{inquire_picture_id}
     </delete>
 </mapper>
