@@ -1,19 +1,26 @@
 package com.example.keyboard.service;
 
 import com.example.keyboard.entity.Image.inquire.InquireDaoEntity;
-import com.example.keyboard.entity.Image.inquire.InquireImageEntity;
 import com.example.keyboard.entity.Image.product.ProductDaoEntity;
 import com.example.keyboard.entity.Image.product.ProductImageEntity;
 import com.example.keyboard.entity.product.ProductEntity;
 import com.example.keyboard.repository.ImageDao;
-import com.example.keyboard.repository.InquireDao;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -418,5 +425,17 @@ public class ImgUploadService {
         imageDao.deleteInquirePicturesByPictureId(inquirePictureId);
     }
 
+    public InputStreamResource loadFileAsResource(String fileName) throws IOException {
+        // 리소스 핸들러로부터 이미지의 상대 경로 가져오기
+        String relativePath = "static/images/" + fileName; // 예를 들어 images 폴더 안에 이미지가 있다고 가정
 
+        // 리소스 핸들러로부터 이미지의 절대 경로 가져오기
+        Resource resource = new ClassPathResource(relativePath);
+
+        if (resource.exists() && resource.isReadable()) {
+            return new InputStreamResource(resource.getInputStream());
+        } else {
+            throw new IOException("File not found " + fileName);
+        }
+    }
 }

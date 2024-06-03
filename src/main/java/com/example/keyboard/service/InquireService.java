@@ -23,6 +23,11 @@ public class InquireService {
         inquireDao.enrollInquireBoard(inquireEntity);
         return inquireEntity.getInquires_id();
     }
+    public Boolean enrollInquireComments(Long member_id, Long inquire_id, String comments) throws Exception{
+        inquireDao.enrollInquireComments(member_id, inquire_id, comments);
+        return true;
+    }
+
     public List<InquireDaoEntity> selectInquireImages(Long inquires_id) throws Exception{
         return imageDao.selectInquireImage(inquires_id);
     }
@@ -55,7 +60,7 @@ public class InquireService {
     public boolean deleteInquireBoard(Long inquire_id) throws Exception{
         inquireDao.deleteInquire(inquire_id);
         inquireDao.deleteInquireComment(inquire_id);
-        imageDao.deleteInquirePicturesById(inquire_id);
+//        imageDao.deleteInquirePicturesById(inquire_id);
         return true;
     }
 }

@@ -2,13 +2,17 @@ package com.example.keyboard.controller;
 
 import com.example.keyboard.entity.Image.inquire.InquireDaoEntity;
 import com.example.keyboard.entity.Image.inquire.InquireImageEntity;
+import com.example.keyboard.entity.board.inquire.CommentEntity;
 import com.example.keyboard.entity.board.inquire.InquireEntity;
 import com.example.keyboard.service.InquireService;
 import com.example.keyboard.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +52,19 @@ public class InquireController {
             imageController.uploadInquireImg(Images, inquires_id);
 
             return new ResponseEntity<>(true, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "문의 답변 등록", description = "문의 등록하기")
+    @PostMapping("/comments/{inquire_id}")
+    public ResponseEntity<Object> enrollInquireComments(@RequestParam(value = "member_id") Long member_id,
+                                                        @RequestParam(value = "inquire_id") Long inquire_id,
+                                                        @RequestParam(value = "comments") String comments) {
+        try {
+            Boolean isComments = inquireService.enrollInquireComments(member_id, inquire_id, comments);
+            return new ResponseEntity<>(isComments, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -145,9 +162,6 @@ public class InquireController {
         }
     }
 
-
-
-
     @Operation(summary = "해당 유저의 문의 삭제", description = "해당 유저의 등록된 문의 게시글 삭제")
     @DeleteMapping("/delete/{inquires_id}")
     public ResponseEntity<Object> deleteInquireBoard(@PathVariable("inquires_id") Long inquire_id){
@@ -158,4 +172,16 @@ public class InquireController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/download/{fileName}")
+    public ResponseEntity<InputStreamResource> downloadInquireImg(@PathVariable("fileName") String fileName) {
+        try {
+            return imageController.downloadFile(fileName);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(null);
+        }
+    }
+
+
+
 }

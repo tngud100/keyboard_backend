@@ -9,6 +9,11 @@
         INSERT INTO inquires(member_id, title, content, inquire_type)
         VALUES (#{member_id}, #{title}, #{content}, #{inquire_type})
     </insert>
+    <!-- 답변 등록 -->
+    <insert id="enrollInquireComments" parameterType="InquireEntity" useGeneratedKeys="true" keyProperty="inquires_id">
+--         INSERT INTO inquires(member_id, title, content, inquire_type)
+--         VALUES (#{member_id}, #{title}, #{content}, #{inquire_type})
+    </insert>
 
     <!-- 문의 검색 By memberId -->
     <select id="selectInquireBoardsByMemberId" parameterType="Long" resultType="InquireEntity">

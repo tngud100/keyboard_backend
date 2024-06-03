@@ -7,12 +7,17 @@
     import com.example.keyboard.service.ImgUploadService;
     import io.swagger.v3.oas.annotations.Operation;
     import io.swagger.v3.oas.annotations.tags.Tag;
+    import jakarta.annotation.Resource;
+    import org.springframework.core.io.InputStreamResource;
+    import org.springframework.http.HttpHeaders;
     import org.springframework.http.HttpStatus;
+    import org.springframework.http.MediaType;
     import org.springframework.http.ResponseEntity;
     import org.springframework.stereotype.Component;
     import org.springframework.web.bind.annotation.*;
     import org.springframework.web.multipart.MultipartFile;
 
+    import java.io.IOException;
     import java.util.ArrayList;
     import java.util.List;
 
@@ -122,6 +127,20 @@
             }catch(Exception e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        public ResponseEntity<InputStreamResource> downloadFile(@RequestParam String fileName) {
+            try {
+                InputStreamResource fileResource = imgUploadService.loadFileAsResource(fileName);
+
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType("application/octet-stream"))
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                        .body(fileResource);
+
+            } catch (IOException e) {
+                return ResponseEntity.status(500).body(null);
             }
         }
     }
