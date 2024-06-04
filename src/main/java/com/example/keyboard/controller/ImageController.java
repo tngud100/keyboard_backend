@@ -118,10 +118,14 @@
 
         public ResponseEntity<Object> modifyInquireImg(MultipartFile imgFile, String existedFileName, Long inquires_id) throws Exception{
             try{
-                InquireDaoEntity deletedInquireDaoEntity = imgUploadService.deleteBeforeInquireImg(existedFileName, inquires_id);
-                imgUploadService.deleteInquireImg(deletedInquireDaoEntity);
-                InquireDaoEntity newInquireDaoEntity = imgUploadService.uploadInquireImg(imgFile, inquires_id);
-                imgUploadService.saveInquireImgPath(newInquireDaoEntity);
+                if(!existedFileName.equals("null")){
+                    InquireDaoEntity deletedInquireDaoEntity = imgUploadService.deleteBeforeInquireImg(existedFileName, inquires_id);
+                    imgUploadService.deleteInquireImg(deletedInquireDaoEntity);
+                }
+                if(imgFile != null){
+                    InquireDaoEntity newInquireDaoEntity = imgUploadService.uploadInquireImg(imgFile, inquires_id);
+                    imgUploadService.saveInquireImgPath(newInquireDaoEntity);
+                }
 
                 return new ResponseEntity<>("이미지 수정 완료", HttpStatus.OK);
             }catch(Exception e) {

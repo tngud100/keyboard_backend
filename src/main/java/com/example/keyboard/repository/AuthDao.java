@@ -13,5 +13,6 @@ public interface AuthDao {
      public String existsByPhoneNum(String phoneNum) throws Exception;
 
      public MemberEntity findByLoginId(String userId) throws Exception;
+     public MemberEntity findByMemberId(Long memberId) throws Exception;
 }
 

@@ -8,6 +8,10 @@
     <select id="findByLoginId" parameterType="String" resultType="MemberEntity">
         select * from member where LOGIN_ID = #{LOGIN_ID}
     </select>
+    <!-- 유저ID로 정보 검색 -->
+    <select id="findByMemberId" parameterType="Long" resultType="MemberEntity">
+        select * from member where MEMBER_ID = #{MEMBER_ID}
+    </select>
 
     <!-- 중복확인 -->
     <select id="existsById" parameterType="String" resultType="String">

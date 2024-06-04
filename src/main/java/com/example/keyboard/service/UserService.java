@@ -61,6 +61,9 @@ public class UserService {
     public MemberEntity getUserByLoginId(String userId) throws Exception{
         return authDao.findByLoginId(userId);
     }
+    public MemberEntity getUserByMemberId(Long memberId) throws Exception{
+        return authDao.findByMemberId(memberId);
+    }
 
 
     public void logout(String AccessToken, String RefreshToken) {

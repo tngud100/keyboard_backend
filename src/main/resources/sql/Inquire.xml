@@ -10,21 +10,34 @@
         VALUES (#{member_id}, #{title}, #{content}, #{inquire_type})
     </insert>
     <!-- 답변 등록 -->
-    <insert id="enrollInquireComments" parameterType="InquireEntity" useGeneratedKeys="true" keyProperty="inquires_id">
---         INSERT INTO inquires(member_id, title, content, inquire_type)
---         VALUES (#{member_id}, #{title}, #{content}, #{inquire_type})
+    <insert id="enrollInquireComments">
+        INSERT INTO inquirecomments(member_id, inquires_id, comment)
+        VALUES (#{member_id} ,#{inquires_id}, #{comment})
     </insert>
 
-    <!-- 문의 검색 By memberId -->
-    <select id="selectInquireBoardsByMemberId" parameterType="Long" resultType="InquireEntity">
-        SELECT * FROM inquires WHERE member_id = #{member_id} AND isdelete = 0;
+    <!-- 문의 검색 ALL -->
+    <select id="selectAllInquireBoards" resultType="InquireEntity">
+        SELECT * FROM inquires WHERE isdelete = 0 ORDER BY comment_state ASC;
     </select>
     <!-- 문의 검색 By memberId -->
+    <select id="selectInquireBoardsByMemberId" parameterType="Long" resultType="InquireEntity">
+        SELECT * FROM inquires WHERE member_id = #{member_id} AND isdelete = 0 ORDER BY comment_state DESC;
+    </select>
+    <!-- 문의 검색 By InquireId -->
     <select id="selectInquireBoardByInquireId" parameterType="Long" resultType="InquireEntity">
         SELECT * FROM inquires WHERE inquires_id = #{inquires_id} AND isdelete = 0;
     </select>
+    <!-- 문의 답변 검색 -->
+    <select id="selectInquireComment" parameterType="Long" resultType="InquireCommentEntity">
+        SELECT * FROM inquirecomments WHERE inquires_id = #{inquires_id} AND isdelete = 0;
+    </select>
 
-
+    <!-- 문의 commentState 업데이트 -->
+    <update id="updateInquireCommentState" parameterType="Long">
+        UPDATE inquires
+        SET comment_state = 1
+        WHERE inquires_id = #{inquires_id}
+    </update>
     <!-- 문의 수정 -->
     <update id="updateInquireBoard" parameterType="InquireEntity">
         UPDATE inquires
@@ -32,6 +45,12 @@
             content = #{content},
             inquire_type= #{inquire_type}
 
+        WHERE inquires_id = #{inquires_id}
+    </update>
+    <!-- 문의 답변 수정 -->
+    <update id="updateInquireComments">
+        UPDATE inquirecomments
+        SET comment = #{comment}
         WHERE inquires_id = #{inquires_id}
     </update>
 

@@ -118,4 +118,15 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+    @Operation(summary = "유저 정보 데이터 get by memberId(유저ID)")
+    @GetMapping("/user/memberId/{memberId}")
+    public ResponseEntity<Object> getUserByMemberId(@PathVariable("memberId") Long memberId){
+        try {
+            MemberEntity memberData = userService.getUserByMemberId(memberId);
+            return new ResponseEntity<>(memberData, HttpStatus.OK);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
