@@ -8,15 +8,23 @@
     <select id="findByLoginId" parameterType="String" resultType="MemberEntity">
         select * from member where LOGIN_ID = #{LOGIN_ID}
     </select>
+    <!-- 유저ID로 정보 검색 -->
+    <select id="findByMemberId" parameterType="Long" resultType="MemberEntity">
+        select * from member where MEMBER_ID = #{MEMBER_ID}
+    </select>
 
     <!-- 중복확인 -->
     <select id="existsById" parameterType="String" resultType="String">
         select LOGIN_ID from member where LOGIN_ID = #{LOGIN_ID}
     </select>
+    <!-- 중복확인 -->
+    <select id="existsByPhoneNum" parameterType="String" resultType="String">
+        select PHONE_NUM from member where PHONE_NUM = #{PHONE_NUM}
+    </select>
 
     <!--  회원가입  -->
     <insert id="join" parameterType="MemberEntity">
-        INSERT INTO member(LOGIN_ID, PASSWORD, USER_NAME, PHONE_NUM, ADDRESS, ZIPCODE, ADDRESS_DETAIL, EMAIL, BIRTHDAY)
-        VALUES(#{LOGIN_ID}, #{PASSWORD}, #{USER_NAME}, #{PHONE_NUM},#{ADDRESS}, #{ZIPCODE}, #{ADDRESS_DETAIL}, #{EMAIL}, #{BIRTHDAY})
+        INSERT INTO member(LOGIN_ID, PASSWORD, USER_NAME, PHONE_NUM, ZIPCODE, ROAD_ADDRESS, JIBUN_ADDRESS, DETAIL_ADDRESS, EMAIL, BIRTHDAY)
+        VALUES(#{LOGIN_ID}, #{PASSWORD}, #{USER_NAME}, #{PHONE_NUM}, #{ZIPCODE},#{ROAD_ADDRESS}, #{JIBUN_ADDRESS}, #{DETAIL_ADDRESS}, #{EMAIL}, #{BIRTHDAY})
     </insert>
 </mapper>
